@@ -1,0 +1,95 @@
+import { login, getInfo, updatebaseInfo } from "@/utils/api.js";
+
+const user = {
+  state: {
+    id: "",
+    name: "",
+    avatar: "",
+    role: "", // 0:游客 1:普通用户 2:医生 3:经理人 9:前台页面管理员
+    status: "", // 用户账号状态 0保留 1未激活 2已激活 3已锁定(也叫审核未通过) 9已删除
+    phone: ""
+  },
+
+  mutations: {
+    SET_ID: (state, id) => {
+      state.id = id;
+    },
+    SET_NAME: (state, name) => {
+      state.name = name;
+    },
+    SET_AVATAR: (state, avatar) => {
+      state.avatar = avatar;
+    },
+    SET_ROLE: (state, role) => {
+      state.role = role;
+    },
+    SET_STATUS: (state, status) => {
+      state.status = status;
+    },
+    SET_PHONE: (state, phone) => {
+      state.phone = phone;
+    }
+  },
+
+  actions: {
+    // 登录
+    async Login({ commit }) {
+      let code;
+      await wx.loginAsync().then(res => {
+        code = res.code;
+      });
+      return new Promise((resolve, reject) => {
+        login({ code })
+          .then(response => {
+            const data = response.data;
+            wx.setStorageSync("token", data.token);
+            resolve();
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    },
+
+    UpdatebaseInfo({ commit, state }, data) {
+      return new Promise((resolve, reject) => {
+        updatebaseInfo(data)
+          .then(response => {
+            const data = response.data;
+            commit("SET_ID", data._id);
+            commit("SET_ROLE", data.role);
+            commit("SET_NAME", data.name);
+            commit("SET_AVATAR", data.avatarUrl);
+            commit("SET_STATUS", data.status);
+            commit("SET_PHONE", data.phone);
+            resolve(response);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    },
+
+    // 获取用户信息
+    GetInfo({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        getInfo()
+          .then(response => {
+            const data = response.data;
+            commit("SET_ID", data._id);
+            commit("SET_ROLE", data.role);
+            commit("SET_NAME", data.name);
+            commit("SET_AVATAR", data.avatarUrl);
+            commit("SET_STATUS", data.status);
+            commit("SET_PHONE", data.phone);
+            resolve(response);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    }
+  }
+};
+
+export default user;
