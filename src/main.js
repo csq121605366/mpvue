@@ -31,7 +31,8 @@ export default {
       "pages/qa/main",
       "pages/my/main",
       "pages/roleselect/main",
-      "^pages/userinfo/main"
+      "^pages/userinfo/main",
+      "pages/addfriend/main"
     ],
     window: {
       // backgroundTextStyle: "light",

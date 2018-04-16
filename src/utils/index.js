@@ -44,7 +44,7 @@ export function debounce(func, wait, leading, trailing) {
   var timer,
     lastCall = 0,
     flag = true;
-  return function() {
+  return function () {
     var context = this;
     var args = arguments;
     var now = +new Date();
@@ -60,7 +60,7 @@ export function debounce(func, wait, leading, trailing) {
     }
     if (trailing) {
       clearTimeout(timer);
-      timer = setTimeout(function() {
+      timer = setTimeout(function () {
         flag = true;
         func.apply(context, args);
       }, wait);
@@ -73,7 +73,7 @@ export function throttle(func, wait, leading, trailing) {
   var timer,
     lastCall = 0,
     flag = true;
-  return function() {
+  return function () {
     var context = this;
     var args = arguments;
     var now = +new Date();
@@ -83,7 +83,7 @@ export function throttle(func, wait, leading, trailing) {
       return func.apply(context, args);
     }
     if (!timer && trailing && !(flag && leading)) {
-      timer = setTimeout(function() {
+      timer = setTimeout(function () {
         timer = null;
         lastCall = +new Date();
         func.apply(context, args);
@@ -100,7 +100,7 @@ export function curry(func) {
   return function curried() {
     var args = [].slice.call(arguments);
     if (args.length < l) {
-      return function() {
+      return function () {
         var argsInner = [].slice.call(arguments);
         return curried.apply(this, args.concat(argsInner));
       };
@@ -155,3 +155,33 @@ export const authType = {
     info: "网址格式不正确"
   } // url验证
 };
+
+
+
+export function guid(len, radix) {
+  var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+  var uuid = [], i;
+  radix = radix || chars.length;
+
+  if (len) {
+    // Compact form
+    for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+  } else {
+    // rfc4122, version 4 form
+    var r;
+
+    // rfc4122 requires these characters
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+    uuid[14] = '4';
+
+    // Fill in random data.  At i==19 set the high bits of clock sequence as
+    // per rfc4122, sec. 4.1.5
+    for (i = 0; i < 36; i++) {
+      if (!uuid[i]) {
+        r = 0 | Math.random() * 16;
+        uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+      }
+    }
+  }
+  return uuid.join('');
+}

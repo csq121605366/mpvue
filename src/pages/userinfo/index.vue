@@ -9,36 +9,168 @@
       <div class="userinfo">
         <form @submit="formSubmit" @reset="formReset">
           <div class="zan-panel">
+            <div class="zan-cell zan-field avatar">
+              <image class="avatar_img" model="aspectFit" :src="form.avatar.imageURL?form.avatar.imageURL+'-webp':''"></image>
+              <div class="avatar_btn" @click="chooseAvatar">
+                <span>上传头像</span>
+                <div class="zan-arrow"></div>
+              </div>
+            </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">姓名</div>
-              <input type="text" name="name" v-model="form.name" placeholder="请输入姓名" class="zan-field__input zan-cell__bd" />
+              <input type="text" v-model="form.name" placeholder="请输入姓名" class="zan-field__input zan-cell__bd" />
             </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">性别</div>
-              <picker range-key="value" :range="pickerViewConfig.genderList" @change="genderChange" :value="pickerViewConfig.gender">
-                <input type="text" :value="pickerViewConfig.genderList[pickerViewConfig.gender].value" disabled class="zan-field__input zan-cell__bd" />
+              <picker range-key="value" :range="picker.genderList" @change="genderChange" :value="picker.gender">
+                <input type="text" :value="picker.genderList[picker.gender].value" disabled class="zan-field__input zan-cell__bd" />
               </picker>
-              <input type="text" name="gender" hidden v-model="form.gender" disabled class="zan-field__input zan-cell__bd" />
             </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">手机号</div>
-              <input type="text" name="phone" v-model="form.phone" placeholder="请输入手机号" class="zan-field__input zan-cell__bd" />
+              <input type="text" v-model="form.phone" placeholder="请输入手机号" class="zan-field__input zan-cell__bd" />
             </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">验证码</div>
-              <input type="text" name="code" v-model="form.code" placeholder="请输入短信验证码" class="zan-field__input zan-cell__bd" />
+              <input type="text" v-model="form.code" placeholder="请输入短信验证码" class="zan-field__input zan-cell__bd" />
               <div class="zan-cell__ft">
                 <button @click="sendCode" :disabled="sendCodeing" class="zan-btn zan-btn--mini zan-btn--primary">获取验证码</button>
               </div>
             </div>
-            
-            
-
-            <div class="zan-btns">
-              <button class="zan-btn zan-btn--primary" formType="submit">提交数据</button>
-              <button class="zan-btn" formType="reset">重置数据</button>
+            <!-- <div class="zan-cell zan-field">
+              <div class="zan-cell__hd zan-field__title">身份证</div>
+              <input type="text" v-model="form.idcard" placeholder="请输入身份证号码" class="zan-field__input zan-cell__bd" />
+            </div> -->
+          </div>
+          <!-- 普通用户 -->
+          <div v-if="form.role=='1'">
+            <div class="zan-panel">
+              <div class="zan-cell zan-field">
+                <div class="zan-cell__hd zan-field__title">关注科室</div>
+                <div class="zan-cell__bd">
+                  <view v-if="form.department.length==0" class="department_tip">最多选择三个</view>
+                  <view v-else class="department_show">
+                    <span class="department_tag" v-for="(item,index) in form.department" :key="index">
+                      {{item.label}}
+                      <i @click="form.department.splice(index, 1)" class="department_tag_close iconfont icon-guanbi"></i>
+                    </span>
+                  </view>
+                </div>
+                <div class="zan-cell__ft">
+                  <picker mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
+                    <button class="zan-btn zan-btn--mini zan-btn--primary">选择科室</button>
+                  </picker>
+                </div>
+              </div>
+            </div>
+            <div class="zan-panel">
+              <view @click="treamentShow=!treamentShow" class="zan-panel-title treatment_title">就诊信息(非必填,填写有助于医生诊断)
+                <i class="zan-arrow treatment_showbtn" :class="treamentShow?'treatment_showbtn-active':''"></i>
+              </view>
+              <div v-if="treamentShow">
+                <div class="zan-cell zan-field">
+                  <div class="zan-cell__hd zan-field__title">主治医生</div>
+                  <input type="text" v-model="form.doctor_name" placeholder="请填写主治医生" class="zan-field__input zan-cell__bd" />
+                </div>
+                <div class="zan-cell zan-field">
+                  <div class="zan-cell__hd zan-field__title">所患疾病</div>
+                  <input type="text" v-model="form.illness_name" placeholder="请填写所患疾病" class="zan-field__input zan-cell__bd" />
+                </div>
+                <div class="zan-cell zan-field">
+                  <div class="zan-cell__hd zan-field__title">是否手术</div>
+                  <picker range-key="value" :range="picker.operationList" @change="operationChange" :value="picker.operation">
+                    <input type="text" :value="picker.operationList[picker.operation].value" disabled class="zan-field__input zan-cell__bd" />
+                  </picker>
+                </div>
+                <div class="zan-cell zan-field">
+                  <div class="zan-cell__hd zan-field__title">就诊信息</div>
+                  <div class="treatment_info">
+                    <div class="treatment_tip zan-c-gray">提问前请上传病例信息，便于医生了解您的病情。上传资料以图片的方式提供，包括住院病例，入院记录、手术记录、出院记录、会诊记录、B超、心电图、CT、核磁共振、医嘱记录等 图片个数：{{form.treatment_images.length}} / 9 (长按删除)</div>
+                    <div class="treatment_img_list">
+                      <div @longtap="imgsDel(index,'treatment_images')" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.treatment_images" :key="index" class="treatment_img_item">
+                        <image class="treatment_img_image" :src="item.imageURL+'-webp'"></image>
+                      </div>
+                      <div @click="imgsAdd('treatment_images')" class="treatment_img_item treament_img_add">
+                        <span class="iconfont icon-tainjia"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+          <!-- 普通用户-end -->
+
+          <!-- 医生 -->
+          <div v-if="form.role==2">
+            <div class="zan-panel">
+              <div class="zan-cell zan-field">
+                <div class="zan-cell__hd zan-field__title">职称</div>
+                <picker v-if="picker.titleList.length" range-key="name" :range="picker.titleList" @change="titleChange" :value="picker.title">
+                  <input type="text" :value="picker.titleList[picker.title].name" disabled class="zan-field__input zan-cell__bd" />
+                </picker>
+              </div>
+              <div class="zan-cell zan-field">
+                <div class="zan-cell__hd zan-field__title">证书</div>
+                <div class="treatment_info">
+                  <div class="treatment_tip zan-c-gray">上传医师资格证书,执业资格证书 图片个数：{{form.certificate.length}} / 9 (长按删除)</div>
+                  <div class="treatment_img_list">
+                    <div @longtap="imgsDel(index,'certificate')" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.certificate" :key="index" class="treatment_img_item">
+                      <image class="treatment_img_image" :src="item.imageURL+'-webp'"></image>
+                    </div>
+                    <div @click="imgsAdd('certificate')" class="treatment_img_item treament_img_add">
+                      <span class="iconfont icon-tainjia"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="zan-cell zan-field">
+                <div class="zan-cell__hd zan-field__title">简介</div>
+                <div class="zan-cell__bd">
+                  <input v-model="form.description" class="zan-field__input zan-cell__bd" placeholder="个人简介(擅长领域)" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 医生-end -->
+          <!-- 经纪人 -->
+          <div v-if="form.role==3">
+            <div class="zan-panel">
+              <div class="zan-cell zan-field">
+                <div class="zan-cell__hd zan-field__title">潜在客户</div>
+                <div class="zan-cell__bd">
+                </div>
+                <div class="zan-cell__ft">
+                  <navigator url="/pages/addfriend/main" class="zan-btn zan-btn--mini zan-btn--primary">添加客户</navigator>
+                </div>
+              </div>
+            </div>
+            <div class="zan-panel">
+              <div class="zan-cell zan-field">
+                <div class="zan-cell__hd zan-field__title">代理科室</div>
+                <div class="zan-cell__bd">
+                  <view v-if="form.department.length==0" class="department_tip">最多选择三个</view>
+                  <view v-else class="department_show">
+                    <span class="department_tag" v-for="(item,index) in form.department" :key="index">
+                      {{item.label}}
+                      <i @click="form.department.splice(index, 1)" class="department_tag_close iconfont icon-guanbi"></i>
+                    </span>
+                  </view>
+                </div>
+                <div class="zan-cell__ft">
+                  <picker mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
+                    <button class="zan-btn zan-btn--mini zan-btn--primary">选择科室</button>
+                  </picker>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 经纪人-end -->
+
+          <div class="zan-btns">
+            <button class="zan-btn zan-btn--primary" formType="submit">完善数据</button>
+          </div>
+
         </form>
       </div>
     </div>
@@ -49,8 +181,16 @@
 import cHeader from "@/components/cHeader";
 import ZanField from "@/components/zan/field";
 import ZanSelect from "@/components/zan/select";
-import { sendCode } from "@/utils/api.js";
-import { authType } from "@/utils";
+import {
+  sendCode,
+  mainDepart,
+  viceDepart,
+  qiniuTicket,
+  titleList
+} from "@/utils/api.js";
+import { authType, guid } from "@/utils";
+import { defaultCoreCipherList } from "constants";
+import * as qiniu from "@/utils/qiniuUploader";
 export default {
   components: {
     cHeader,
@@ -59,8 +199,7 @@ export default {
   },
   data() {
     return {
-      role: "1",
-      pickerViewConfig: {
+      picker: {
         gender: 0,
         genderList: [
           {
@@ -71,14 +210,44 @@ export default {
             key: "2",
             value: "女"
           }
-        ]
+        ],
+        operation: 0,
+        operationList: [
+          {
+            key: "1",
+            value: "否"
+          },
+          {
+            key: "2",
+            value: "是"
+          }
+        ],
+        department: [0, 0],
+        departmentList: [],
+        title: 0,
+        titleList: []
       },
       sendCodeing: false,
+      qiniuTicket: "",
+      treamentShow: true,
       form: {
+        role: "3",
+        avatar: {},
         name: "",
         gender: "1",
         phone: "",
-        code: ""
+        code: "",
+        idcard: "",
+        department: [],
+
+        doctor_name: "",
+        illness_name: "",
+        operation: "",
+        treatment_images: [],
+
+        title: "",
+        certificate: [],
+        description: ""
       }
     };
   },
@@ -95,15 +264,113 @@ export default {
     //         });
     //       }
     //     });
-    //   }, 1000);
+    //   }, 600);
     // } else {
-    //   this.role = option.role;
+    //   this.form.role = option.role;
     // }
+    //获取主要科室(患者和经纪人)
+    if (this.form.role == 1 || this.form.role == 3) {
+      this.getmainDepart();
+    } else {
+      this.getTitleList();
+    }
+    // 获取七牛ticket
+    qiniuTicket().then(res => {
+      this.qiniuTicket = res.data;
+    });
   },
   methods: {
+    getTitleList() {
+      titleList().then(res => {
+        this.picker.titleList = res.data;
+      });
+    },
+    titleChange(e) {
+      this.picker.title = e.target.value;
+      this.form.title = this.picker.titleList[this.picker.title]._id;
+    },
+    getmainDepart() {
+      //获取主列表并设置默认值
+      mainDepart().then(res => {
+        let m = res.data;
+        let mArr = [];
+        m.forEach(item => {
+          mArr.push(item.label);
+        });
+        this.picker.departmentList = [mArr, []];
+        this.mainDepartList = m;
+        this.mainDepartArr = mArr;
+        let default_id = m[0]["_id"];
+        if (default_id) {
+          this.getviceDepart(default_id);
+        }
+      });
+    },
+    getviceDepart(_id) {
+      // 动态获取副列表
+      viceDepart(_id).then(res => {
+        let m = res.data;
+        let mArr = [];
+        m.forEach(item => {
+          mArr.push(item.label);
+        });
+        this.picker.departmentList = [this.mainDepartArr, mArr];
+        this.viceDepartList = m;
+        this.viceDepartArr = mArr;
+      });
+    },
+    async departmentColumChange(e) {
+      //科室主列表选择后变更副列表
+      // 符合条件才进行查询副列表 1是列表变化事件 2列表变化的是第一列 3新选择的主列值跟老值不一样
+      this.picker.department[e.target.column] = e.target.value;
+      if (e.type == "columnchange" && e.target.column == 0) {
+        let index = e.target.value;
+        await this.getviceDepart(this.mainDepartList[index]["_id"]);
+        this.picker.department[1] = 0;
+      }
+    },
+    chooseAvatar() {
+      let self = this;
+      wx
+        .chooseImageAsync({
+          count: 1, // 默认9
+          sizeType: ["original", "compressed"], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ["album", "camera"] // 可以指定来源是相册还是相机，默认二者都有
+        })
+        .then(res => {
+          var tempFilePaths = res.tempFilePaths[0];
+          self.uploadImg(tempFilePaths, res => {
+            // 返回bucket文件夹名 fsize文件大小 hash值 imageURL图片地址 key文件名
+            self.form.avatar = res;
+          });
+        });
+    },
     genderChange(e) {
-      this.pickerViewConfig.gender = e.target.value;
-      this.form.gender = this.pickerViewConfig.genderList[e.target.value].key;
+      //性别选择成功
+      this.picker.gender = e.target.value;
+      this.form.gender = this.picker.genderList[e.target.value].key;
+    },
+    departmentChange(e) {
+      //科室选择成功
+      let cIndex = e.target.value[1];
+      let oSelectArr = this.form.department;
+      if (oSelectArr.length < 3) {
+        let obj = {
+          label: this.viceDepartList[cIndex].label,
+          key: this.viceDepartList[cIndex].key
+        };
+        this.form.department.push(obj);
+      } else {
+        wx.showToast({
+          title: "最多选择三个科室",
+          icon: "none"
+        });
+      }
+    },
+    operationChange(e) {
+      // 是否手术选择成功
+      this.picker.operation = e.target.value;
+      this.form.operation = this.picker.operationList[e.target.value].key;
     },
     setsendCodeBtn() {
       setTimeout(() => {
@@ -135,8 +402,70 @@ export default {
         });
       }
     },
-    formSubmit(e) {
+    async uploadImg(filePath, cb) {
+      let self = this;
+      // filePath, success, fail, options, progress
+      await qiniu.upload(
+        filePath,
+        res => {
+          if (cb) cb(res);
+          wx.showToast({
+            title: "上传成功",
+            icon: "success"
+          });
+        },
+        error => {
+          wx.showToast({
+            title: "上传失败",
+            icon: "none"
+          });
+        },
+        {
+          region: "NCN",
+          domain: "http://p6syg4m80.bkt.clouddn.com", // // bucket 域名，下载资源时用到。如果设置，会在 success callback 的 res 参数加上可以直接使用的 ImageURL 字段。否则需要自己拼接
+          uptoken: self.qiniuTicket // 由其他程序生成七牛 uptoken
+        },
+        res => {}
+      );
+    },
+    imgsDel(index, type = "treatment_images") {
+      this.form[type].splice(index, 1);
+    },
+    imgsAdd(type = "treatment_images") {
+      let self = this;
+      if (this.form[type].length < 9) {
+        wx
+          .chooseImageAsync({
+            count: (9 - this.form[type].length) | 0, // 默认9
+            sizeType: ["original", "compressed"], // 可以指定是原图还是压缩图，默认二者都有
+            sourceType: ["album", "camera"] // 可以指定来源是相册还是相机，默认二者都有
+          })
+          .then(async res => {
+            var tempFilePaths = res.tempFilePaths;
+            tempFilePaths.forEach(src => {
+              self.uploadImg(src, res => {
+                // 返回bucket文件夹名 fsize文件大小 hash值 imageURL图片地址 key文件名
+                self.form[type].push(res);
+              });
+            });
+          });
+      } else {
+        wx.showToast({
+          title: "最多上传9张",
+          icon: "success"
+        });
+      }
+    },
+    imgsPrev(url) {
+      wx.previewImage({
+        urls: [url]
+      });
+    },
+    descTextAreaBlur(e) {
       console.log(e);
+    },
+    formSubmit(e) {
+      console.log(this);
     },
     formReset(e) {
       console.log(e);
@@ -146,5 +475,89 @@ export default {
 </script>
 
 <style scpoed>
-
+._input {
+  color: #949494;
+}
+.avatar {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+.avatar_btn {
+  padding: 20px 0 20px 20px;
+  line-height: 10px;
+  color: #c8c8c8;
+}
+.avatar_btn ._span {
+  padding-right: 10px;
+}
+.avatar_img {
+  width: 60px;
+  height: 60px;
+  background-color: #eeeeee;
+}
+.department_picker {
+  min-height: 30px;
+  line-height: 30px;
+  color: #949494;
+  width: 100%;
+}
+.department_show {
+  padding-right: 30px;
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+}
+.department_tag {
+  padding: 0 8px;
+  margin: 4px 0;
+  border: 1px solid #949494;
+  border-radius: 4px;
+  line-height: 20px;
+  font-size: 12px;
+}
+.department_tag_close {
+  display: inline-block;
+  line-height: 23px;
+  vertical-align: middle;
+}
+.treatment_title {
+  position: relative;
+  padding: 10px;
+}
+.treatment_showbtn {
+  right: 30px;
+  transform: rotateZ(-45deg);
+}
+.treatment_showbtn.treatment_showbtn-active {
+  transform: rotateZ(135deg);
+}
+.treatment_img_list {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+}
+.treatment_img_item {
+  background-color: #eee;
+  text-align: center;
+  line-height: 70px;
+  margin: 5px 10px 10px 0;
+  height: 70px;
+  width: 70px;
+  border-radius: 6px;
+}
+.treatment_img_item .iconfont {
+  font-size: 30px;
+  font-weight: 600;
+}
+.treatment_img_image {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+.desc_textarea {
+  padding-right: 10px;
+  width: 100%;
+}
 </style>

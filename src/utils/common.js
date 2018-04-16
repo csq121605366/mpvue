@@ -1,5 +1,4 @@
-import * as qiniu from "qiniu-js/dist/qiniu.min.js";
-wx.qiniu = qiniu;
+
 import * as _ from "lodash";
 wx._ = _;
 
@@ -40,3 +39,5 @@ const asyncWrap = fn => (options = {}) =>
 
 wx.requestAsync = asyncWrap("request");
 wx.loginAsync = asyncWrap("login");
+wx.chooseImageAsync = asyncWrap('chooseImage');
+wx.uploadFileAsync = asyncWrap('uploadFile');
