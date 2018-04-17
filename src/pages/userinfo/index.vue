@@ -1,10 +1,6 @@
 <template>
   <div class="app">
-    <c-header fixed title="完善信息">
-      <div slot="left">
-        <navigator open-type="navigateBack">返回</navigator>
-      </div>
-    </c-header>
+    <c-header back fixed title="完善信息"></c-header>
     <div class="container">
       <div class="userinfo">
         <form @submit="formSubmit" @reset="formReset">
@@ -50,9 +46,8 @@
                 <div class="zan-cell__bd">
                   <view v-if="form.department.length==0" class="department_tip">最多选择三个</view>
                   <view v-else class="department_show">
-                    <span class="department_tag" v-for="(item,index) in form.department" :key="index">
+                    <span @longtap="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
                       {{item.label}}
-                      <i @click="form.department.splice(index, 1)" class="department_tag_close iconfont icon-guanbi"></i>
                     </span>
                   </view>
                 </div>
@@ -102,8 +97,24 @@
           <!-- 普通用户-end -->
 
           <!-- 医生 -->
-          <div v-if="form.role==2">
+          <div v-if="form.role=='2'">
             <div class="zan-panel">
+              <div class="zan-cell zan-field">
+                <div class="zan-cell__hd zan-field__title">科室</div>
+                <div class="zan-cell__bd">
+                  <view v-if="form.department.length==0" class="department_tip">选择科室</view>
+                  <view v-else class="department_show">
+                    <span @longtap="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
+                      {{item.label}}
+                    </span>
+                  </view>
+                </div>
+                <div class="zan-cell__ft">
+                  <picker mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
+                    <button class="zan-btn zan-btn--mini zan-btn--primary">选择科室</button>
+                  </picker>
+                </div>
+              </div>
               <div class="zan-cell zan-field">
                 <div class="zan-cell__hd zan-field__title">职称</div>
                 <picker v-if="picker.titleList.length" range-key="name" :range="picker.titleList" @change="titleChange" :value="picker.title">
@@ -134,14 +145,18 @@
           </div>
           <!-- 医生-end -->
           <!-- 经纪人 -->
-          <div v-if="form.role==3">
+          <div v-if="form.role=='3'">
             <div class="zan-panel">
               <div class="zan-cell zan-field">
                 <div class="zan-cell__hd zan-field__title">潜在客户</div>
-                <div class="zan-cell__bd">
+                <div class="zan-cell__bd department_show">
+                  <span class="department_tag" v-for="(item,index) in form.friend" :key="index">
+                    {{item.name}}
+                    <i @click="form.friend.splice(index, 1)" class="department_tag_close iconfont icon-guanbi"></i>
+                  </span>
                 </div>
                 <div class="zan-cell__ft">
-                  <navigator url="/pages/addfriend/main" class="zan-btn zan-btn--mini zan-btn--primary">添加客户</navigator>
+                  <navigator open-type="navigateTo" url="/pages/addfriend/main" class="zan-btn zan-btn--mini zan-btn--primary">添加客户</navigator>
                 </div>
               </div>
             </div>
@@ -149,11 +164,10 @@
               <div class="zan-cell zan-field">
                 <div class="zan-cell__hd zan-field__title">代理科室</div>
                 <div class="zan-cell__bd">
-                  <view v-if="form.department.length==0" class="department_tip">最多选择三个</view>
+                  <view v-if="form.department.length==0" class="department_tip">最多选择三个(长按删除)</view>
                   <view v-else class="department_show">
-                    <span class="department_tag" v-for="(item,index) in form.department" :key="index">
+                    <span @longtap="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
                       {{item.label}}
-                      <i @click="form.department.splice(index, 1)" class="department_tag_close iconfont icon-guanbi"></i>
                     </span>
                   </view>
                 </div>
@@ -163,6 +177,12 @@
                   </picker>
                 </div>
               </div>
+              <div v-if="form.department.length" v-for="(item,index) in form.department" :key="index" class="zan-cell zan-field">
+                <div class="zan-cell__hd zan-field__title">{{item.label}}</div>
+                <div class="zan-cell__bd">
+                  <input type="text" v-model="form.agency[index].name" placeholder="填写主治医生(以空格隔开)" class="zan-field__input zan-cell__bd" />
+                </div>
+              </div>
             </div>
           </div>
           <!-- 经纪人-end -->
@@ -170,7 +190,6 @@
           <div class="zan-btns">
             <button class="zan-btn zan-btn--primary" formType="submit">完善数据</button>
           </div>
-
         </form>
       </div>
     </div>
@@ -186,7 +205,8 @@ import {
   mainDepart,
   viceDepart,
   qiniuTicket,
-  titleList
+  titleList,
+  update
 } from "@/utils/api.js";
 import { authType, guid } from "@/utils";
 import * as qiniu from "@/utils/qiniuUploader";
@@ -228,61 +248,77 @@ export default {
       },
       sendCodeing: false,
       qiniuTicket: "",
+      qiniuDomain: "",
+      qiniuRegion: "",
       treamentShow: true,
       form: {
-        role: "3",
+        role: "",
         avatar: {},
         name: "",
         gender: "1",
         phone: "",
         code: "",
-        idcard: "",
-        department: [],
-
+        // idcard: "",
+        department: [], //所有人都可以关联科室 但是医生只能关联一个 其他关联三个
+        //treatment_info里面包含的信息
         doctor_name: "",
         illness_name: "",
-        operation: "",
+        operation: "1",
         treatment_images: [],
+        //treatment_info-end
 
-        title: "",
-        certificate: [],
-        description: ""
+        title: "", //职称string
+        certificate: [], //医生证书
+        description: "", //医生描述
+
+        friend: [], //经纪人潜在客户
+        agency: [] //经纪人代理客户
       }
     };
   },
+  onShow() {
+    let friend = this.$store.getters.friend;
+    console.log(friend);
+  },
   onLoad: function(option) {
-    // if (!option.role) {
-    //   // 没有选择角色进来
-    //   setTimeout(() => {
-    //     wx.navigateTo({
-    //       url: "/pages/roleselect/main",
-    //       success() {
-    //         wx.showToast({
-    //           title: "请选择角色",
-    //           icon: "none"
-    //         });
-    //       }
-    //     });
-    //   }, 600);
-    // } else {
-    //   this.form.role = option.role;
-    // }
-    console.log(option);
-    //获取主要科室(患者和经纪人)
-    if (this.form.role == 1 || this.form.role == 3) {
-      this.getmainDepart();
+    if (!option.role && this.form.role == "") {
+      // 没有选择角色进来
+      setTimeout(() => {
+        wx.navigateTo({
+          url: "/pages/roleselect/main",
+          success() {
+            wx.showToast({
+              title: "请选择角色",
+              icon: "none"
+            });
+          }
+        });
+      }, 600);
     } else {
+      this.form.role = option.role;
+    }
+    if (option.target) {
+      let target = JSON.parse(option.target);
+      this.form.friend.push(target);
+    }
+    //医生职称
+    if (this.form.role == "2") {
       this.getTitleList();
     }
+    this.getmainDepart();
     // 获取七牛ticket
     qiniuTicket().then(res => {
-      this.qiniuTicket = res.data;
+      this.qiniuRegion = res.data.qiniuRegion;
+      this.qiniuTicket = res.data.qiniuTicket;
+      this.qiniuDomain = res.data.qiniuDomain;
     });
   },
   methods: {
     getTitleList() {
       titleList().then(res => {
         this.picker.titleList = res.data;
+        // 设置默认值
+        this.form.title = res.data[0]["_id"];
       });
     },
     titleChange(e) {
@@ -350,6 +386,11 @@ export default {
       this.picker.gender = e.target.value;
       this.form.gender = this.picker.genderList[e.target.value].key;
     },
+    departmentDel(i) {
+      //科室删除时要同时删除代理
+      this.form.department.splice(i, 1);
+      this.form.agency.splice(i, 1);
+    },
     departmentChange(e) {
       //科室选择成功
       let cIndex = e.target.value[1];
@@ -360,6 +401,7 @@ export default {
           key: this.viceDepartList[cIndex].key
         };
         this.form.department.push(obj);
+        this.form.agency.push({ department: obj, name: "" });
       } else {
         wx.showToast({
           title: "最多选择三个科室",
@@ -421,8 +463,8 @@ export default {
           });
         },
         {
-          region: "NCN",
-          domain: "http://p6syg4m80.bkt.clouddn.com", // // bucket 域名，下载资源时用到。如果设置，会在 success callback 的 res 参数加上可以直接使用的 ImageURL 字段。否则需要自己拼接
+          region: self.qiniuRegion,
+          domain: self.qiniuDomain, // // bucket 域名，下载资源时用到。如果设置，会在 success callback 的 res 参数加上可以直接使用的 ImageURL 字段。否则需要自己拼接
           uptoken: self.qiniuTicket // 由其他程序生成七牛 uptoken
         },
         res => {}
@@ -464,8 +506,21 @@ export default {
     descTextAreaBlur(e) {
       console.log(e);
     },
+    validate() {
+      let form = this.form;
+      // form.forEach((item,value)=>{
+      //   switch(item){
+      //     case ''
+      //   }
+      // })
+    },
     formSubmit(e) {
       console.log(this);
+      // update(this.form).then(res => {
+      //   wx.redirectTo({
+      //     url: "/pages/my/main"
+      //   });
+      // });
     },
     formReset(e) {
       console.log(e);
@@ -504,10 +559,11 @@ export default {
 }
 .department_show {
   padding-right: 30px;
-  height: 40px;
+  min-height: 40px;
   display: flex;
   flex-flow: column;
   align-items: flex-start;
+  justify-content: center;
 }
 .department_tag {
   padding: 0 8px;
@@ -517,11 +573,10 @@ export default {
   line-height: 20px;
   font-size: 12px;
 }
-.department_tag_close {
-  display: inline-block;
-  line-height: 23px;
-  vertical-align: middle;
+.department_tip {
+  color: #949494;
 }
+
 .treatment_title {
   position: relative;
   padding: 10px;

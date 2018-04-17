@@ -1,25 +1,22 @@
 <template>
-    <div class="app">
-        <c-header fixed title="完善信息">
-            <div slot="left">
-                <navigator open-type="navigateBack">返回</navigator>
-            </div>
-        </c-header>
-        <div class="container">
-            <div class="role">
-                <div class="zan-panel">
-                    <div class="zan-panel-title zan-hairline--bottom">角色选定后不可更改</div>
-                    <zan-select v-bind="{ items:roles.items, checkedValue: roles.checked, componentId: 'roles'}" @handleZanSelectChange="roleSelect" />
-                    <button class="zan-btn zan-btn--primary" @click="roleChanged">确认</button>
-                </div>
-            </div>
+  <div class="app">
+    <c-header back fixed title="完善信息"></c-header>
+    <div class="container">
+      <div class="role">
+        <div class="zan-panel">
+          <div class="zan-panel-title zan-hairline--bottom">角色选定后不可更改</div>
+          <zan-select v-bind="{ items:roles.items, checkedValue: roles.checked, componentId: 'roles'}" @handleZanSelectChange="roleSelect" />
+          <button class="zan-btn zan-btn--primary" @click="roleChanged">确认</button>
         </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 import cHeader from "@/components/cHeader";
 import ZanSelect from "@/components/zan/select";
+import { canUpdate } from "@/utils/api";
 export default {
   components: {
     cHeader,
@@ -55,8 +52,10 @@ export default {
     },
     roleChanged() {
       //角色选择完毕 跳转
-      wx.navigateTo({
-        url: "/pages/userinfo/main?role=" + this.roles.checked
+      canUpdate().then(() => {
+        wx.navigateTo({
+          url: "/pages/userinfo/main?role=" + this.roles.checked
+        });
       });
     }
   }

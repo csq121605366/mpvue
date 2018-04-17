@@ -13,10 +13,10 @@
         <!--游客 -->
         <div v-if="role==0">
           <div class="zan-panel">
-            <navigator url="/pages/userinfo/main" class="zan-cell zan-cell--access">
+            <div @click="updateInfo" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
               <div class="zan-cell__ft">完善</div>
-            </navigator>
+            </div>
             <div @click="completeMsg" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的问题</div>
               <div class="zan-cell__ft"></div>
@@ -33,7 +33,7 @@
           <div class="zan-panel">
             <div class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
-              <div class="zan-cell__ft"></div>
+              <div  v-if="status==1" class="zan-cell__ft zan-c-red">审核中...</div>
             </div>
             <div class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的问题</div>
@@ -97,7 +97,7 @@
 
 <script>
 import cHeader from "@/components/cHeader";
-
+import { canUpdate } from "@/utils/api";
 import { mapGetters } from "vuex";
 export default {
   components: {
@@ -114,10 +114,15 @@ export default {
         mask: true
       });
     },
-    getUserInfo(e) {
-      this.$store.dispatch("UpdatebaseInfo", e.target.userInfo).then(res => {
-        console.log(res);
+    updateInfo() {
+      canUpdate().then(res => {
+        wx.navigateTo({
+          url: "/pages/roleselect/main"
+        });
       });
+    },
+    getUserInfo(e) {
+      this.$store.dispatch("UpdatebaseInfo", e.target.userInfo);
     }
   }
 };

@@ -156,7 +156,7 @@ class WxValidate {
        * 验证两个输入框的内容是否相同
        */
       equalTo(value, param) {
-        return that.optional(value) || value === that.scope.detail.value[param];
+        return that.optional(value) || value === that.scope[param];
       },
       /**
        * 验证是否包含某个值
@@ -237,7 +237,7 @@ class WxValidate {
   formatTpl(source, params) {
     const that = this;
     if (arguments.length === 1) {
-      return function() {
+      return function () {
         let args = Array.from(arguments);
         args.unshift(source);
         return that.formatTpl.apply(this, args);
@@ -252,8 +252,8 @@ class WxValidate {
     if (params.constructor !== Array) {
       params = [params];
     }
-    params.forEach(function(n, i) {
-      source = source.replace(new RegExp("\\{" + i + "\\}", "g"), function() {
+    params.forEach(function (n, i) {
+      source = source.replace(new RegExp("\\{" + i + "\\}", "g"), function () {
         return n;
       });
     });
@@ -338,12 +338,12 @@ class WxValidate {
    * @param {Object} rules 规则
    * @param {Object} event 表单数据对象
    */
-  checkParam(param, rules, event) {
+  checkParam(param, rules, event, odata) {
     // 缓存表单数据对象
-    this.scope = event;
+    this.scope = JSON.parse(JSON.stringify(odata ? odata : event.detail.value));
 
     // 缓存字段对应的值
-    const data = event.detail.value;
+    const data = odata ? odata : event.detail.value;
     const value =
       data[param] !== null && data[param] !== undefined ? data[param] : "";
 

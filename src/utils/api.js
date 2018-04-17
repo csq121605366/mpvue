@@ -23,6 +23,23 @@ export function updatebaseInfo(data) {
     data
   });
 }
+export function canUpdate() {
+  return wx.requestAsync({
+    url: 'app/canupdate'
+  })
+}
+
+export function update(data) {
+  return wx.requestAsync({
+    header: {
+      'content-type': 'application/json'
+    },
+    url: "app/update",
+    method: "POST",
+    data
+  })
+}
+
 
 // 发送手机验证码
 export function sendCode(data) {

@@ -11,10 +11,16 @@ const asyncWrap = fn => (options = {}) =>
         "content-type": "application/x-www-form-urlencoded"
       },
       success: res => {
+        console.log('res', res)
         if (res.data) {
           if (res.data.success) {
             resolve(res.data);
           } else {
+            wx.showToast({
+              title: res.data.error || res.data.message,
+              icon: 'none',
+              duration: 2000
+            })
             reject(res.data);
           }
         } else {
@@ -22,12 +28,13 @@ const asyncWrap = fn => (options = {}) =>
         }
       },
       fail: err => {
-        wx.showToast({
-          title: '无网络',
-          icon: 'none',
-          duration: 2000
-        })
-        reject(err);
+        console.log('err', err)
+        // wx.showToast({
+        //   title: '无网络',
+        //   icon: 'none',
+        //   duration: 2000
+        // })
+        // reject(err);
       }
     };
     options.url = conf.baseUrl + options.url;

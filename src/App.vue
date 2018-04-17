@@ -20,15 +20,15 @@ page {
 .app {
   height: 100%;
   width: 100%;
-  overflow: hidden;
   color: #2b2b2b;
   font-size: 14px;
 }
 .container {
   background-color: #f0f0f0;
-  margin-top: 70px;
+  padding-top: 70px;
+  box-sizing: border-box;
   height: 100%;
-  overflow: scroll;
+  /* overflow: scroll; */
   width: 100%;
 }
 /* this rule will be remove */

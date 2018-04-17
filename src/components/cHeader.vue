@@ -1,9 +1,8 @@
 <template>
-  <header
-    class="c-header"
-    :class="{ 'is-fixed': fixed }">
+  <header class="c-header" :class="{ 'is-fixed': fixed }">
     <div class="c-header-button is-left">
-      <slot name="left"></slot>
+      <!-- <slot name="left"></slot> -->
+      <navigator v-if="back" open-type="navigateBack">返回</navigator>
     </div>
     <h1 class="c-header-title" v-text="title"></h1>
     <div class="c-header-button is-right"></div>
@@ -15,7 +14,8 @@ export default {
   name: "mt-header",
   props: {
     fixed: Boolean,
-    title: String
+    title: String,
+    back: Boolean
   }
 };
 </script>
@@ -57,7 +57,7 @@ export default {
   right: 0;
   left: 0;
   position: fixed;
-   z-index: 999;
+  z-index: 999;
 }
 .c-header-button {
   -webkit-box-flex: 0.5;
