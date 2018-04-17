@@ -189,7 +189,6 @@ import {
   titleList
 } from "@/utils/api.js";
 import { authType, guid } from "@/utils";
-import { defaultCoreCipherList } from "constants";
 import * as qiniu from "@/utils/qiniuUploader";
 export default {
   components: {
@@ -268,6 +267,7 @@ export default {
     // } else {
     //   this.form.role = option.role;
     // }
+    console.log(option);
     //获取主要科室(患者和经纪人)
     if (this.form.role == 1 || this.form.role == 3) {
       this.getmainDepart();
@@ -504,6 +504,7 @@ export default {
 }
 .department_show {
   padding-right: 30px;
+  height: 40px;
   display: flex;
   flex-flow: column;
   align-items: flex-start;

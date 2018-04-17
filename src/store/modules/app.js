@@ -1,8 +1,5 @@
 const app = {
-  state: {
-    interval: 60,
-    qiniuTicket: ""
-  },
+  state: {},
   mutations: {},
   actions: {}
 };

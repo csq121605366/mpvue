@@ -2,7 +2,6 @@
 import * as _ from "lodash";
 wx._ = _;
 
-
 const asyncWrap = fn => (options = {}) =>
   new Promise((resolve, reject) => {
     let conf = {
