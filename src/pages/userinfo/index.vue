@@ -46,7 +46,7 @@
                 <div class="zan-cell__bd">
                   <view v-if="form.department.length==0" class="department_tip">最多选择三个</view>
                   <view v-else class="department_show">
-                    <span @longtap="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
+                    <span @longpress="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
                       {{item.label}}
                     </span>
                   </view>
@@ -82,7 +82,7 @@
                   <div class="treatment_info">
                     <div class="treatment_tip zan-c-gray">提问前请上传病例信息，便于医生了解您的病情。上传资料以图片的方式提供，包括住院病例，入院记录、手术记录、出院记录、会诊记录、B超、心电图、CT、核磁共振、医嘱记录等 图片个数：{{form.treatment_images.length}} / 9 (长按删除)</div>
                     <div class="treatment_img_list">
-                      <div @longtap="imgsDel(index,'treatment_images')" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.treatment_images" :key="index" class="treatment_img_item">
+                      <div @longpress="imgsDel(index,'treatment_images')" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.treatment_images" :key="index" class="treatment_img_item">
                         <image class="treatment_img_image" :src="item.imageURL+'-webp'"></image>
                       </div>
                       <div @click="imgsAdd('treatment_images')" class="treatment_img_item treament_img_add">
@@ -100,11 +100,23 @@
           <div v-if="form.role=='2'">
             <div class="zan-panel">
               <div class="zan-cell zan-field">
+                <div class="zan-cell__hd zan-field__title">医院</div>
+                <div class="zan-cell__bd department_show">
+                  <div v-if="form.friend.length==0" class="department_tip">选择医院(长按删除)</div>
+                  <div @longpress="form.hospital.splice(index,1)" class="department_tag" v-for="(item,index) in form.friend" :key="index">
+                    {{item.name}}
+                  </div>
+                </div>
+                <div class="zan-cell__ft">
+                  <navigator v-if="form.friend.length==0" open-type="navigateTo" url="/pages/search/main?type=hospital" class="zan-btn zan-btn--mini zan-btn--primary">选择医院</navigator>
+                </div>
+              </div>
+              <div class="zan-cell zan-field">
                 <div class="zan-cell__hd zan-field__title">科室</div>
                 <div class="zan-cell__bd">
-                  <view v-if="form.department.length==0" class="department_tip">选择科室</view>
+                  <view v-if="form.department.length==0" class="department_tip">选择科室(长按删除)</view>
                   <view v-else class="department_show">
-                    <span @longtap="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
+                    <span @longpress="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
                       {{item.label}}
                     </span>
                   </view>
@@ -126,7 +138,7 @@
                 <div class="treatment_info">
                   <div class="treatment_tip zan-c-gray">上传医师资格证书,执业资格证书 图片个数：{{form.certificate.length}} / 9 (长按删除)</div>
                   <div class="treatment_img_list">
-                    <div @longtap="imgsDel(index,'certificate')" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.certificate" :key="index" class="treatment_img_item">
+                    <div @longpress="imgsDel(index,'certificate')" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.certificate" :key="index" class="treatment_img_item">
                       <image class="treatment_img_image" :src="item.imageURL+'-webp'"></image>
                     </div>
                     <div @click="imgsAdd('certificate')" class="treatment_img_item treament_img_add">
@@ -150,10 +162,10 @@
               <div class="zan-cell zan-field">
                 <div class="zan-cell__hd zan-field__title">潜在客户</div>
                 <div class="zan-cell__bd department_show">
-                  <span class="department_tag" v-for="(item,index) in form.friend" :key="index">
+                  <div v-if="form.friend.length==0" class="department_tip">添加潜在客户(长按删除)</div>
+                  <div @longpress="form.friend.splice(index,1)" class="department_tag" v-for="(item,index) in form.friend" :key="index">
                     {{item.name}}
-                    <i @click="form.friend.splice(index, 1)" class="department_tag_close iconfont icon-guanbi"></i>
-                  </span>
+                  </div>
                 </div>
                 <div class="zan-cell__ft">
                   <navigator open-type="navigateTo" url="/pages/addfriend/main" class="zan-btn zan-btn--mini zan-btn--primary">添加客户</navigator>
@@ -166,7 +178,7 @@
                 <div class="zan-cell__bd">
                   <view v-if="form.department.length==0" class="department_tip">最多选择三个(长按删除)</view>
                   <view v-else class="department_show">
-                    <span @longtap="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
+                    <span @longpress="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
                       {{item.label}}
                     </span>
                   </view>
@@ -252,7 +264,7 @@ export default {
       qiniuRegion: "",
       treamentShow: true,
       form: {
-        role: "",
+        role: "2",
         avatar: {},
         name: "",
         gender: "1",
@@ -267,6 +279,7 @@ export default {
         treatment_images: [],
         //treatment_info-end
 
+        hospital: "", //医院_id
         title: "", //职称string
         certificate: [], //医生证书
         description: "", //医生描述
@@ -277,26 +290,28 @@ export default {
     };
   },
   onShow() {
-    let friend = this.$store.getters.friend;
-    console.log(friend);
+    let friend = this.$mp.page.data.friend;
+    if (friend) {
+      this.form.friend.push(friend);
+    }
   },
   onLoad: function(option) {
-    if (!option.role && this.form.role == "") {
-      // 没有选择角色进来
-      setTimeout(() => {
-        wx.navigateTo({
-          url: "/pages/roleselect/main",
-          success() {
-            wx.showToast({
-              title: "请选择角色",
-              icon: "none"
-            });
-          }
-        });
-      }, 600);
-    } else {
-      this.form.role = option.role;
-    }
+    // if (!option.role && this.form.role == "") {
+    //   // 没有选择角色进来
+    //   setTimeout(() => {
+    //     wx.navigateTo({
+    //       url: "/pages/roleselect/main",
+    //       success() {
+    //         wx.showToast({
+    //           title: "请选择角色",
+    //           icon: "none"
+    //         });
+    //       }
+    //     });
+    //   }, 600);
+    // } else if(option.role) {
+    //   this.form.role = option.role;
+    // }
     if (option.target) {
       let target = JSON.parse(option.target);
       this.form.friend.push(target);
@@ -516,11 +531,11 @@ export default {
     },
     formSubmit(e) {
       console.log(this);
-      // update(this.form).then(res => {
-      //   wx.redirectTo({
-      //     url: "/pages/my/main"
-      //   });
-      // });
+      update(this.form).then(res => {
+        // wx.redirectTo({
+        //   url: "/pages/my/main"
+        // });
+      });
     },
     formReset(e) {
       console.log(e);

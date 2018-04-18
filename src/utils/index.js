@@ -40,40 +40,48 @@ export function clone(value, isDeep) {
 }
 
 // 防抖
-export function debounce(func, wait, leading, trailing) {
-  var timer,
-    lastCall = 0,
-    flag = true;
-  return function () {
-    var context = this;
-    var args = arguments;
-    var now = +new Date();
-    if (now - lastCall < wait) {
-      flag = false;
-      lastCall = now;
+export function debounce(func, wait, immediate) {
+  // immediate默认为false
+  var timeout, args, context, timestamp, result;
+
+  var later = function() {
+    // 当wait指定的时间间隔期间多次调用_.debounce返回的函数，则会不断更新timestamp的值，导致last < wait && last >= 0一直为true，从而不断启动新的计时器延时执行func
+    var last = _.now() - timestamp;
+
+    if (last < wait && last >= 0) {
+      timeout = setTimeout(later, wait - last);
     } else {
-      flag = true;
-    }
-    if (leading && flag) {
-      lastCall = now;
-      return func.apply(context, args);
-    }
-    if (trailing) {
-      clearTimeout(timer);
-      timer = setTimeout(function () {
-        flag = true;
-        func.apply(context, args);
-      }, wait);
+      timeout = null;
+      if (!immediate) {
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+      }
     }
   };
-}
+
+  return function() {
+    context = this;
+    args = arguments;
+    timestamp = _.now();
+    // 第一次调用该方法时，且immediate为true，则调用func函数
+    var callNow = immediate && !timeout;
+    // 在wait指定的时间间隔内首次调用该方法，则启动计时器定时调用func函数
+    if (!timeout) timeout = setTimeout(later, wait);
+    if (callNow) {
+      result = func.apply(context, args);
+      context = args = null;
+    }
+
+    return result;
+  };
+};
 
 // 节流
 export function throttle(func, wait, leading, trailing) {
   var timer,
     lastCall = 0,
     flag = true;
-  return function () {
+  return function() {
     var context = this;
     var args = arguments;
     var now = +new Date();
@@ -83,7 +91,7 @@ export function throttle(func, wait, leading, trailing) {
       return func.apply(context, args);
     }
     if (!timer && trailing && !(flag && leading)) {
-      timer = setTimeout(function () {
+      timer = setTimeout(function() {
         timer = null;
         lastCall = +new Date();
         func.apply(context, args);
@@ -100,7 +108,7 @@ export function curry(func) {
   return function curried() {
     var args = [].slice.call(arguments);
     if (args.length < l) {
-      return function () {
+      return function() {
         var argsInner = [].slice.call(arguments);
         return curried.apply(this, args.concat(argsInner));
       };
@@ -156,32 +164,33 @@ export const authType = {
   } // url验证
 };
 
-
-
 export function guid(len, radix) {
-  var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-  var uuid = [], i;
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(
+    ""
+  );
+  var uuid = [],
+    i;
   radix = radix || chars.length;
 
   if (len) {
     // Compact form
-    for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+    for (i = 0; i < len; i++) uuid[i] = chars[0 | (Math.random() * radix)];
   } else {
     // rfc4122, version 4 form
     var r;
 
     // rfc4122 requires these characters
-    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-    uuid[14] = '4';
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = "-";
+    uuid[14] = "4";
 
     // Fill in random data.  At i==19 set the high bits of clock sequence as
     // per rfc4122, sec. 4.1.5
     for (i = 0; i < 36; i++) {
       if (!uuid[i]) {
-        r = 0 | Math.random() * 16;
-        uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+        r = 0 | (Math.random() * 16);
+        uuid[i] = chars[i == 19 ? (r & 0x3) | 0x8 : r];
       }
     }
   }
-  return uuid.join('');
+  return uuid.join("");
 }

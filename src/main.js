@@ -13,14 +13,14 @@ const app = new Vue(App);
 app.$mount();
 
 // 尝试获取用户信息;
-app.$store.dispatch("GetInfo").catch(res => {
-  if (res.statusCode != 200) {
-    app.$store.dispatch("Login", { code: res.code }).then(() => {
-      //第二次拉取用户信息
-      app.$store.dispatch("GetInfo");
-    });
-  }
-});
+// app.$store.dispatch("GetInfo").catch(res => {
+//   if (res.statusCode != 200) {
+//     app.$store.dispatch("Login", { code: res.code }).then(() => {
+//       //第二次拉取用户信息
+//       app.$store.dispatch("GetInfo");
+//     });
+//   }
+// });
 
 export default {
   // 这个字段走 app.json
@@ -31,8 +31,9 @@ export default {
       "pages/qa/main",
       "pages/my/main",
       "pages/roleselect/main",
-      "^pages/userinfo/main",
-      "pages/addfriend/main"
+      "pages/userinfo/main",
+      "pages/addfriend/main",
+      "^pages/search/main"
     ],
     window: {
       // backgroundTextStyle: "light",

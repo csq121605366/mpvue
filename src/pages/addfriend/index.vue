@@ -66,6 +66,7 @@ import ZanField from "@/components/zan/field";
 import ZanSelect from "@/components/zan/select";
 import validate from "@/utils/validate";
 import { titleList, mainDepart, viceDepart } from "@/utils/api.js";
+import { join } from "path";
 export default {
   name: "addfriend",
   components: {
@@ -195,9 +196,14 @@ export default {
       this.form = Object.assign({}, this.oform);
     },
     add() {
-      this.$store.dispatch("push_friend", this.form);
+      let str = JSON.stringify(this.form);
+      let pages = getCurrentPages(); //当前页面
+      let prevPage = pages[pages.length - 2]; //上一页面
+      prevPage.setData({
+        friend:this.form
+      })
       wx.navigateBack();
-      // wx.redirectTo({
+      // wx.navigateTo({
       //   url: "/pages/userinfo/main?target=" + str
       // });
     }

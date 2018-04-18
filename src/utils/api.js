@@ -1,4 +1,3 @@
-
 // 登录
 export function login(data) {
   return wx.requestAsync({
@@ -25,21 +24,20 @@ export function updatebaseInfo(data) {
 }
 export function canUpdate() {
   return wx.requestAsync({
-    url: 'app/canupdate'
-  })
+    url: "app/canupdate"
+  });
 }
 
 export function update(data) {
   return wx.requestAsync({
     header: {
-      'content-type': 'application/json'
+      "content-type": "application/json"
     },
     url: "app/update",
     method: "POST",
     data
-  })
+  });
 }
-
 
 // 发送手机验证码
 export function sendCode(data) {
@@ -50,29 +48,38 @@ export function sendCode(data) {
   });
 }
 
-
 // 获取主科室列表
 export function mainDepart() {
   return wx.requestAsync({
-    url: 'app/maindepartments'
-  })
+    url: "app/maindepartments"
+  });
 }
 // 获取次科室列表
 export function viceDepart(_id) {
   return wx.requestAsync({
-    url: 'app/vicedepartments?_id=' + _id
-  })
+    url: "app/vicedepartments?_id=" + _id
+  });
 }
 
 //获取七牛ticket
 export function qiniuTicket() {
   return wx.requestAsync({
     url: "qiniu/ticket"
-  })
+  });
 }
 
+//职称列表
 export function titleList() {
   return wx.requestAsync({
-    url: 'app/titlelist'
-  })
+    url: "app/titlelist"
+  });
+}
+
+// 搜索医院
+export function hospitalSearch(data) {
+  return wx.requestAsync({
+    url: "app/hospital",
+    method: "POST",
+    data
+  });
 }

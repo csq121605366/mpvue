@@ -1,6 +1,6 @@
-
 import * as _ from "lodash";
 wx._ = _;
+import store from "@/store";
 
 const asyncWrap = fn => (options = {}) =>
   new Promise((resolve, reject) => {
@@ -11,24 +11,39 @@ const asyncWrap = fn => (options = {}) =>
         "content-type": "application/x-www-form-urlencoded"
       },
       success: res => {
-        console.log('res', res)
+        console.log("res", res);
         if (res.data) {
           if (res.data.success) {
             resolve(res.data);
           } else {
-            wx.showToast({
-              title: res.data.error || res.data.message,
-              icon: 'none',
-              duration: 2000
-            })
-            reject(res.data);
+            if (res.statusCode == 401) {
+              store.dispatch("Login").then(res => {
+                store.dispatch("GetInfo");
+              });
+              if(res.data.error&&res.data.error.indexOf('expired')){
+                wx.showToast({
+                  title: '开了个小差,已经回来了',
+                  icon: "none",
+                  duration: 2000
+                });
+              }
+              reject(res.data);
+            } else {
+              wx.showToast({
+                title: res.data.error || res.data.message,
+                icon: "none",
+                duration: 2000
+              });
+              reject(res.data);
+            }
           }
         } else {
           resolve(res);
         }
       },
       fail: err => {
-        console.log('err', err)
+        console.log("err", err);
+
         // wx.showToast({
         //   title: '无网络',
         //   icon: 'none',
@@ -45,5 +60,5 @@ const asyncWrap = fn => (options = {}) =>
 
 wx.requestAsync = asyncWrap("request");
 wx.loginAsync = asyncWrap("login");
-wx.chooseImageAsync = asyncWrap('chooseImage');
-wx.uploadFileAsync = asyncWrap('uploadFile');
+wx.chooseImageAsync = asyncWrap("chooseImage");
+wx.uploadFileAsync = asyncWrap("uploadFile");
