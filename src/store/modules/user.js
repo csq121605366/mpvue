@@ -7,27 +7,63 @@ const user = {
     avatar: "",
     role: "", // 0:游客 1:普通用户 2:医生 3:经理人 9:前台页面管理员
     status: "", // 用户账号状态 0保留 1未激活 2已激活 3已锁定(也叫审核未通过) 9已删除
-    phone: ""
+    phone: "",
+    hospital: "",
+    certificate: '',
+    gender: '',
+    department: '',
+    agency: '',
+    friend: '',
+    title: '',
+    treatment_info: '',
+    description: '',
   },
 
   mutations: {
-    SET_ID: (state, id) => {
-      state.id = id;
+    SET_ID: (state, param) => {
+      state.id = param;
     },
-    SET_NAME: (state, name) => {
-      state.name = name;
+    SET_NAME: (state, param) => {
+      state.name = param;
     },
-    SET_AVATAR: (state, avatar) => {
-      state.avatar = avatar;
+    SET_AVATAR: (state, param) => {
+      state.avatar = param;
     },
-    SET_ROLE: (state, role) => {
-      state.role = role;
+    SET_ROLE: (state, param) => {
+      state.role = param;
     },
-    SET_STATUS: (state, status) => {
-      state.status = status;
+    SET_STATUS: (state, param) => {
+      state.status = param;
     },
-    SET_PHONE: (state, phone) => {
-      state.phone = phone;
+    SET_PHONE: (state, param) => {
+      state.phone = param;
+    },
+    SET_HOSPITAL: (state, param) => {
+      state.hospital = param;
+    },
+    SET_CERTIFICATE: (state, param) => {
+      state.certificate = param;
+    },
+    SET_GENDER: (state, param) => {
+      state.gender = param;
+    },
+    SET_DEPARTMENT: (state, param) => {
+      state.department = param;
+    },
+    SET_AGENCY: (state, param) => {
+      state.agency = param;
+    },
+    SET_FRIEND: (state, param) => {
+      state.friend = param;
+    },
+    SET_TITLE: (state, param) => {
+      state.title = param;
+    },
+    SET_TREATMENT_INFO: (state, param) => {
+      state.treatment_info = param;
+    },
+    SET_DESCRIPTION: (state, param) => {
+      state.description = param;
     }
   },
 
@@ -82,6 +118,20 @@ const user = {
             commit("SET_AVATAR", data.avatarUrl);
             commit("SET_STATUS", data.status);
             commit("SET_PHONE", data.phone);
+            commit("SET_DEPARTMENT", data.department);
+            commit("SET_GENDER", data.gender);
+            //1普通用户 2医生 3经纪人
+            if (data.role == '1') {
+              commit("SET_TREATMENT_INFO", data.treatment_info);
+            } else if (data.role == '2') {
+              commit("SET_HOSPITAL", data.hospital);
+              commit("SET_CERTIFICATE", data.certificate);
+              commit("SET_TITLE", data.title);
+              commit("SET_DESCRIPTION", data.description);
+            } else if (data.role == '3') {
+              commit("SET_FRIEND", data.friend);
+              commit("SET_AGENCY", data.agency);
+            }
             resolve(response);
           })
           .catch(err => {

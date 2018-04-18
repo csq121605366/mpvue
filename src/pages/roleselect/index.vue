@@ -54,7 +54,7 @@ export default {
       //角色选择完毕 跳转
       canUpdate().then(() => {
         wx.navigateTo({
-          url: "/pages/userinfo/main?role=" + this.roles.checked
+          url: "/pages/updateuserinfo/main?role=" + this.roles.checked
         });
       });
     }

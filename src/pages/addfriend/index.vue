@@ -2,60 +2,66 @@
   <div class="app">
     <aheader back fixed title="添加潜在客户"></aheader>
     <div class="container">
-      <form>
-        <div class="zan-panel">
-          <div class="zan-cell zan-field">
-            <div class="zan-cell__hd zan-field__title">姓名</div>
-            <input type="text" name="name" v-model="form.name" placeholder="请输入姓名" class="zan-field__input zan-cell__bd" />
-          </div>
-          <div class="zan-cell zan-field">
-            <div class="zan-cell__hd zan-field__title">性别</div>
-            <picker range-key="value" :range="picker.genderList" @change="genderChange" :value="picker.gender">
-              <input type="text" :value="picker.genderList[picker.gender].value" disabled class="zan-field__input zan-cell__bd" />
-            </picker>
-          </div>
-          <div class="zan-cell zan-field">
-            <div class="zan-cell__hd zan-field__title">手机号</div>
-            <input type="text" v-model="form.phone" placeholder="请输入手机号" class="zan-field__input zan-cell__bd" />
-          </div>
-          <div class="zan-cell zan-field">
-            <div class="zan-cell__hd zan-field__title">医院</div>
-            <input type="text" v-model="form.hospital" placeholder="请输入医院" class="zan-field__input zan-cell__bd" />
-          </div>
-          <div class="zan-cell zan-field">
-            <div class="zan-cell__hd zan-field__title">科室</div>
-            <div class="zan-cell__bd">
-              <view class="department_show">
-                <span class="department_tag" v-for="(item,index) in form.department" :key="index">
-                  {{item.label}}
-                  <i @click="form.department.splice(index, 1)" class="department_tag_close iconfont icon-guanbi"></i>
-                </span>
-              </view>
-            </div>
-            <div class="zan-cell__ft">
-              <picker mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
-                <button class="zan-btn zan-btn--mini zan-btn--primary">选择科室</button>
-              </picker>
+      <div class="zan-panel">
+        <div class="zan-cell zan-field">
+          <div class="zan-cell__hd zan-field__title">姓名</div>
+          <input type="text" v-model="form.name" placeholder="请输入姓名" class="zan-field__input zan-cell__bd" />
+        </div>
+        <div class="zan-cell zan-field">
+          <div class="zan-cell__hd zan-field__title">性别</div>
+          <picker range-key="value" :range="picker.genderList" @change="genderChange" :value="picker.gender">
+            <input type="text" :value="picker.genderList[picker.gender].value" disabled class="zan-field__input zan-cell__bd" />
+          </picker>
+        </div>
+        <div class="zan-cell zan-field">
+          <div class="zan-cell__hd zan-field__title">手机号</div>
+          <input type="text" v-model="form.phone" placeholder="请输入手机号" class="zan-field__input zan-cell__bd" />
+        </div>
+        <div class="zan-cell zan-field">
+          <div class="zan-cell__hd zan-field__title">医院</div>
+          <div class="zan-cell__bd department_show">
+            <div v-if="!form.hospital" class="department_tip">选择医院(长按删除)</div>
+            <div v-else @longpress="form.hospital=''" class="department_tag">
+              {{form.hospital.label}}
             </div>
           </div>
-          <div class="zan-cell zan-field">
-            <div class="zan-cell__hd zan-field__title">职称</div>
-            <picker v-if="picker.titleList.length" range-key="name" :range="picker.titleList" @change="titleChange" :value="picker.title">
-              <input type="text" :value="picker.titleList[picker.title].name" disabled class="zan-field__input zan-cell__bd" />
-            </picker>
-          </div>
-          <div class="zan-cell zan-field">
-            <div class="zan-cell__hd zan-field__title">简介</div>
-            <div class="zan-cell__bd">
-              <input v-model="form.description" class="zan-field__input zan-cell__bd" placeholder="个人简介(擅长领域)" />
-            </div>
+          <div class="zan-cell__ft">
+            <navigator v-if="form.hospital.length==0" open-type="navigateTo" url="/pages/search/main?type=hospital" class="zan-btn zan-btn--mini zan-btn--primary">选择医院</navigator>
           </div>
         </div>
-        <div class="zan-btns">
-          <button class="zan-btn zan-btn--primary" @click="add">确定</button>
-          <button class="zan-btn zan-btn--primary" @click="reset">重置</button>
+        <div class="zan-cell zan-field">
+          <div class="zan-cell__hd zan-field__title">科室</div>
+          <div class="zan-cell__bd department_show">
+            <view v-if="form.department.length==0" class="department_tip">选择科室(长按删除)</view>
+            <view v-else>
+              <span @longpress="form.department.splice(index, 1)" class="department_tag" v-for="(item,index) in form.department" :key="index">
+                {{item.label}}
+              </span>
+            </view>
+          </div>
+          <div class="zan-cell__ft">
+            <picker mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
+              <button class="zan-btn zan-btn--mini zan-btn--primary">选择科室</button>
+            </picker>
+          </div>
         </div>
-      </form>
+        <div class="zan-cell zan-field">
+          <div class="zan-cell__hd zan-field__title">职称</div>
+          <picker v-if="picker.titleList.length" range-key="name" :range="picker.titleList" @change="titleChange" :value="picker.title">
+            <input type="text" :value="picker.titleList[picker.title].name" disabled class="zan-field__input zan-cell__bd" />
+          </picker>
+        </div>
+        <div class="zan-cell zan-field">
+          <div class="zan-cell__hd zan-field__title">简介</div>
+          <div class="zan-cell__bd">
+            <textarea v-model="form.description" placeholder="医生简介(擅长领域)" />
+          </div>
+        </div>
+      </div>
+      <div class="btns">
+        <button class="btn zan-btn--primary" @click="reset">重置</button>
+        <button class="btn zan-btn--primary" @click="add">确定</button>
+      </div>
     </div>
   </div>
 </template>
@@ -112,6 +118,12 @@ export default {
         description: ""
       }
     };
+  },
+  onShow() {
+    let hospital = this.$mp.page.data.hospital;
+    if (hospital) {
+      this.form.hospital = hospital;
+    }
   },
   onLoad: function() {
     this.getTitleList();
@@ -196,25 +208,25 @@ export default {
       this.form = Object.assign({}, this.oform);
     },
     add() {
-      let str = JSON.stringify(this.form);
       let pages = getCurrentPages(); //当前页面
       let prevPage = pages[pages.length - 2]; //上一页面
       prevPage.setData({
-        friend:this.form
-      })
+        friend: this.form
+      });
       wx.navigateBack();
-      // wx.navigateTo({
-      //   url: "/pages/userinfo/main?target=" + str
-      // });
     }
   }
 };
 </script>
 
 <style scoped>
+.department_tip {
+  color: #949494;
+}
 .department_show {
   padding-right: 30px;
   height: 34px;
+  line-height: 34px;
   display: flex;
   flex-flow: row;
   align-items: flex-start;
@@ -232,7 +244,16 @@ export default {
   line-height: 23px;
   vertical-align: middle;
 }
-.zan-btns {
+.btns {
   margin-top: 20px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.btn {
+  flex: 1 1 auto;
+  margin: 0 20px;
+  line-height: 40px;
 }
 </style>

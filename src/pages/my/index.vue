@@ -2,9 +2,9 @@
   <div class="app">
     <c-header fixed title="我的"></c-header>
     <div class="container">
-      <div v-if="!name" class="mask_getinfo">
+      <!-- <div v-if="!name" class="mask_getinfo">
         <button open-type="getUserInfo" @getuserinfo="getUserInfo" class="mask_getinfo_btn">点击授权,获取更多内容</button>
-      </div>
+      </div> -->
       <div class="my_avatar_wrap">
         <img class="my_avatar" :src="avatar" alt="">
         <span>{{name||'未授权用户'}}</span>
@@ -33,7 +33,7 @@
           <div class="zan-panel">
             <div class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
-              <div  v-if="status==1" class="zan-cell__ft zan-c-red">审核中...</div>
+              <div v-if="status==1" class="zan-cell__ft zan-c-red">审核中...</div>
             </div>
             <div class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的问题</div>
@@ -60,9 +60,15 @@
           </div>
           <div class="zan-panel">
             <div class="zan-cell zan-cell--access">
-              <div class="zan-cell__bd">我的资讯</div>
+              <div class="zan-cell__bd">我的文章</div>
               <div class="zan-cell__ft"></div>
             </div>
+            <navigator url="/pages/article/main" class="zan-cell zan-cell--access">
+              <div class="zan-cell__bd">写文章</div>
+              <div class="zan-cell__ft"></div>
+            </navigator>
+          </div>
+          <div class="zan-panel">
             <div class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的回答</div>
               <div class="zan-cell__ft"></div>
@@ -121,8 +127,12 @@ export default {
         });
       });
     },
-    getUserInfo(e) {
-      this.$store.dispatch("UpdatebaseInfo", e.target.userInfo);
+    writeHandler() {
+      wx.showModal({
+        content: "很抱歉,为了提供更好的服务,咨询编辑只能在网页端进行",
+        showCancel: false,
+        confirmColor: "#2bb5f5"
+      });
     }
   }
 };

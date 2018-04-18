@@ -80,32 +80,27 @@ export default {
       wx.stopPullDownRefresh();
     }, 800);
   },
-
   methods: {
     bindViewTap() {
       const url = "../logs/main";
       wx.navigateTo({ url });
     },
     getUserInfo() {
-      // 调用登录接口
-      wx.login({
-        success: () => {
-          wx.getUserInfo({
-            success: res => {
-              this.userInfo = res.userInfo;
-            }
-          });
-        }
-      });
+      if (!this.$store.getters.id) {
+        this.$store.dispatch("Login").then(()=>{
+          this.$store.dispatch('GetInfo')
+        })
+      }
     },
     clickHandle(msg, ev) {
       console.log("clickHandle:", msg, ev);
     }
   },
-
+  mounted() {
+    this.getUserInfo();
+  },
   created() {
     // 调用应用实例的方法获取全局数据
-    this.getUserInfo();
   }
 };
 </script>
