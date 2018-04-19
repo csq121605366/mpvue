@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <c-header fixed title="搜索"></c-header>
+    <c-header back fixed title="搜索"></c-header>
     <div class="container">
       <div class="search_wrap">
         <div class="search">

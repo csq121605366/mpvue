@@ -29,12 +29,14 @@ export default {
     pages: [
       "pages/index/main",
       "pages/qa/main",
-      "pages/my/main",
+      "^pages/my/main",
+      "pages/myinfo/main",
+      "pages/department/main",
       "pages/roleselect/main",
       "pages/updateuserinfo/main",
       "pages/addfriend/main",
       "pages/search/main",
-      "^pages/article/main"
+      "pages/article/main"
     ],
     window: {
       // backgroundTextStyle: "light",

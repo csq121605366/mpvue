@@ -75,9 +75,18 @@ class WxValidate {
         } else if (typeof value === "boolean") {
           return !0;
         }
-
         return value.length > 0;
       },
+      /**
+       * 验证姓名
+       */
+      name(value) {
+        return (
+          that.optional(value) ||
+          /^[\u4E00-\u9FA5]{2,5}(?:·[\u4E00-\u9FA5]{2,5})*$/.test(value)
+        )
+      },
+
       /**
        * 验证电子邮箱格式
        */
@@ -92,9 +101,14 @@ class WxValidate {
       /**
        * 验证手机格式
        */
-      tel(value) {
+      phone(value) {
         return that.optional(value) || /^1[34578]\d{9}$/.test(value);
       },
+
+      code(value) {
+        return that.optional(value) || /^[a-zA-Z0-9]{4,6}$/.test(value);
+      },
+
       /**
        * 验证URL格式
        */
@@ -202,7 +216,19 @@ class WxValidate {
        */
       range(value, param) {
         return that.optional(value) || (value >= param[0] && value <= param[1]);
-      }
+      },
+      /**
+       * 验证数组
+       */
+      isarray(value) {
+        return that.optional(value) || Array.isArray(value);
+      },
+      /**
+       * 验证数组
+       */
+      isobject(value) {
+        return JSON.stringify(value) != "{}";
+      },
     };
   }
 
@@ -338,12 +364,12 @@ class WxValidate {
    * @param {Object} rules 规则
    * @param {Object} event 表单数据对象
    */
-  checkParam(param, rules, event, odata) {
+  checkParam(param, rules, event) {
     // 缓存表单数据对象
-    this.scope = JSON.parse(JSON.stringify(odata ? odata : event.detail.value));
+    this.scope = JSON.parse(JSON.stringify(event));
 
     // 缓存字段对应的值
-    const data = odata ? odata : event.detail.value;
+    const data = event;
     const value =
       data[param] !== null && data[param] !== undefined ? data[param] : "";
 

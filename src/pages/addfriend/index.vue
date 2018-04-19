@@ -20,13 +20,13 @@
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">医院</div>
           <div class="zan-cell__bd department_show">
-            <div v-if="!form.hospital" class="department_tip">选择医院(长按删除)</div>
-            <div v-else @longpress="form.hospital=''" class="department_tag">
+            <div v-if="!form.hospital.label" class="department_tip">选择医院(长按删除)</div>
+            <div v-else @longpress="form.hospital={}" class="department_tag">
               {{form.hospital.label}}
             </div>
           </div>
           <div class="zan-cell__ft">
-            <navigator v-if="form.hospital.length==0" open-type="navigateTo" url="/pages/search/main?type=hospital" class="zan-btn zan-btn--mini zan-btn--primary">选择医院</navigator>
+            <navigator v-if="!form.hospital.label" open-type="navigateTo" url="/pages/search/main?type=hospital" class="zan-btn zan-btn--mini zan-btn--primary">选择医院</navigator>
           </div>
         </div>
         <div class="zan-cell zan-field">
@@ -47,8 +47,8 @@
         </div>
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">职称</div>
-          <picker v-if="picker.titleList.length" range-key="name" :range="picker.titleList" @change="titleChange" :value="picker.title">
-            <input type="text" :value="picker.titleList[picker.title].name" disabled class="zan-field__input zan-cell__bd" />
+          <picker v-if="picker.titleList.length" range-key="label" :range="picker.titleList" @change="titleChange" :value="picker.title">
+            <input type="text" :value="picker.titleList[picker.title].label" disabled class="zan-field__input zan-cell__bd" />
           </picker>
         </div>
         <div class="zan-cell zan-field">
@@ -70,9 +70,8 @@
 import cHeader from "@/components/cHeader";
 import ZanField from "@/components/zan/field";
 import ZanSelect from "@/components/zan/select";
-import validate from "@/utils/validate";
 import { titleList, mainDepart, viceDepart } from "@/utils/api.js";
-import { join } from "path";
+import WxValidate from "@/utils/validate";
 export default {
   name: "addfriend",
   components: {
@@ -104,7 +103,7 @@ export default {
         gender: "1",
         title: "",
         phone: "",
-        hospital: "",
+        hospital: {},
         department: [],
         description: ""
       },
@@ -113,7 +112,7 @@ export default {
         gender: "1",
         title: "",
         phone: "",
-        hospital: "",
+        hospital: {},
         department: [],
         description: ""
       }
@@ -208,12 +207,60 @@ export default {
       this.form = Object.assign({}, this.oform);
     },
     add() {
-      let pages = getCurrentPages(); //当前页面
-      let prevPage = pages[pages.length - 2]; //上一页面
-      prevPage.setData({
-        friend: this.form
-      });
-      wx.navigateBack();
+      // 验证字段的规则
+      const rules = {
+        name: {
+          required: true,
+          name: true
+        },
+        phone: {
+          required: false,
+          phone: true
+        },
+        hospital: {
+          isobject: true
+        },
+        department: {
+          required: true,
+          isarray: true
+        }
+      };
+
+      // 验证字段的提示信息，若不传则调用默认的信息
+      const messages = {
+        name: {
+          required: "请输入姓名",
+          name: "请正确输入姓名"
+        },
+        phone: {
+          phone: "请输入正确的手机号"
+        },
+        hospital: {
+          isobject: "请添加医院信息"
+        },
+        department: {
+          required: "请添加科室信息",
+          isarray: "科室信息不能为空"
+        }
+      };
+      // 创建实例对象
+      this.WxValidate = new WxValidate(rules, messages);
+      if (!this.WxValidate.checkForm(this.form)) {
+        const error = this.WxValidate.errorList[0];
+        wx.showToast({
+          title: error.msg,
+          icon: "none",
+          mask: true
+        });
+        return false;
+      } else {
+        let pages = getCurrentPages(); //当前页面
+        let prevPage = pages[pages.length - 2]; //上一页面
+        prevPage.setData({
+          friend: this.form
+        });
+        wx.navigateBack();
+      }
     }
   }
 };
@@ -235,7 +282,6 @@ export default {
   padding: 0 8px;
   margin: 4px 0;
   border: 1px solid #949494;
-  border-radius: 4px;
   line-height: 20px;
   font-size: 12px;
 }

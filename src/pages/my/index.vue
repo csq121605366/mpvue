@@ -6,7 +6,7 @@
         <button open-type="getUserInfo" @getuserinfo="getUserInfo" class="mask_getinfo_btn">点击授权,获取更多内容</button>
       </div> -->
       <div class="my_avatar_wrap">
-        <img class="my_avatar" :src="avatar" alt="">
+        <img class="my_avatar" :src="avatar?avatar.imageURL:avatarUrl" alt="">
         <span>{{name||'未授权用户'}}</span>
       </div>
       <div class="my_fun">
@@ -31,10 +31,10 @@
         <!--用户 -->
         <div v-if="role==1">
           <div class="zan-panel">
-            <div class="zan-cell zan-cell--access">
+            <navigator url="/pages/myinfo/main" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
-              <div v-if="status==1" class="zan-cell__ft zan-c-red">审核中...</div>
-            </div>
+              <div class="zan-cell__ft"></div>
+            </navigator>
             <div class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的问题</div>
               <div class="zan-cell__ft"></div>
@@ -49,9 +49,13 @@
         <!-- 医生 -->
         <div v-if="role==2">
           <div class="zan-panel">
-            <div class="zan-cell zan-cell--access">
+            <navigator v-if="status==2" url="/pages/myinfo/main" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
               <div class="zan-cell__ft"></div>
+            </navigator>
+            <div v-else class="zan-cell zan-cell--access">
+              <div class="zan-cell__bd">我的信息</div>
+              <div class="zan-cell__ft zan-c-red">审核中...</div>
             </div>
             <div class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的科室</div>
@@ -79,18 +83,22 @@
         <!-- 经纪人 -->
         <div v-if="role==3">
           <div class="zan-panel">
-            <div class="zan-cell zan-cell--access">
+            <navigator v-if="status==2" url="/pages/myinfo/main" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
               <div class="zan-cell__ft"></div>
+            </navigator>
+            <div v-else class="zan-cell zan-cell--access">
+              <div class="zan-cell__bd">我的信息</div>
+              <div class="zan-cell__ft zan-c-red">审核中...</div>
             </div>
           </div>
           <div class="zan-panel">
             <div class="zan-cell zan-cell--access">
-              <div class="zan-cell__bd">我代理的医生</div>
+              <div class="zan-cell__bd">代理的医生</div>
               <div class="zan-cell__ft"></div>
             </div>
             <div class="zan-cell zan-cell--access">
-              <div class="zan-cell__bd">我代理的科室</div>
+              <div class="zan-cell__bd">代理的科室</div>
               <div class="zan-cell__ft"></div>
             </div>
           </div>
@@ -110,7 +118,10 @@ export default {
     cHeader
   },
   computed: {
-    ...mapGetters(["avatar", "name", "role", "status"])
+    ...mapGetters(["avatar", "avatarUrl", "name", "role", "status"])
+  },
+  mounted() {
+    this.$store.dispatch("GetInfo");
   },
   methods: {
     completeMsg() {

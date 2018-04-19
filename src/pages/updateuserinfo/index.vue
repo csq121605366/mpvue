@@ -5,7 +5,7 @@
       <div class="userinfo">
         <div class="zan-panel">
           <div class="zan-cell zan-field avatar">
-            <image class="avatar_img" model="aspectFit" :src="form.avatar.imageURL?form.avatar.imageURL+'-webp':''"></image>
+            <image class="avatar_img" model="aspectFit" :src="(form.avatar&&form.avatar.imageURL)?form.avatar.imageURL+'-webp':''"></image>
             <div class="avatar_btn" @click="chooseAvatar">
               <span>上传头像</span>
               <div class="zan-arrow"></div>
@@ -64,27 +64,27 @@
             <div v-if="treamentShow">
               <div class="zan-cell zan-field">
                 <div class="zan-cell__hd zan-field__title">主治医生</div>
-                <input type="text" v-model="form.doctor_name" placeholder="请填写主治医生" class="zan-field__input zan-cell__bd" />
+                <input type="text" v-model="form.treatment_info.doctor_name" placeholder="请填写主治医生" class="zan-field__input zan-cell__bd" />
               </div>
               <div class="zan-cell zan-field">
                 <div class="zan-cell__hd zan-field__title">所患疾病</div>
-                <input type="text" v-model="form.illness_name" placeholder="请填写所患疾病" class="zan-field__input zan-cell__bd" />
+                <input type="text" v-model="form.treatment_info.illness_name" placeholder="请填写所患疾病" class="zan-field__input zan-cell__bd" />
               </div>
               <div class="zan-cell zan-field">
                 <div class="zan-cell__hd zan-field__title">是否手术</div>
-                <picker range-key="value" :range="picker.operationList" @change="operationChange" :value="picker.operation">
-                  <input type="text" :value="picker.operationList[picker.operation].value" disabled class="zan-field__input zan-cell__bd" />
+                <picker range-key="value" :range="picker.operationList" @change="operationChange" :value="form.treatment_info.operation">
+                  <input type="text" :value="picker.operationList[form.treatment_info.operation].value" disabled class="zan-field__input zan-cell__bd" />
                 </picker>
               </div>
               <div class="zan-cell zan-field">
                 <div class="zan-cell__hd zan-field__title">就诊信息</div>
                 <div class="treatment_info">
-                  <div class="treatment_tip zan-c-gray">提问前请上传病例信息，便于医生了解您的病情。上传资料以图片的方式提供，包括住院病例，入院记录、手术记录、出院记录、会诊记录、B超、心电图、CT、核磁共振、医嘱记录等 图片个数：{{form.treatment_images.length}} / 9 (长按删除)</div>
+                  <div class="treatment_tip zan-c-gray">提问前请上传病例信息，便于医生了解您的病情。上传资料以图片的方式提供，包括住院病例，入院记录、手术记录、出院记录、会诊记录、B超、心电图、CT、核磁共振、医嘱记录等 图片个数：{{form.treatment_info.treatment_images.length}} / 9 (长按删除)</div>
                   <div class="treatment_img_list">
-                    <div @longpress="imgsDel(index,'treatment_images')" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.treatment_images" :key="index" class="treatment_img_item">
+                    <div @longpress="form.treatment_info.treatment_images.splice(index,1)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.treatment_info.treatment_images" :key="index" class="treatment_img_item">
                       <image class="treatment_img_image" :src="item.imageURL+'-webp'"></image>
                     </div>
-                    <div @click="imgsAdd('treatment_images')" class="treatment_img_item">
+                    <div @click="imgsAdd('treatment_info')" class="treatment_img_item">
                       <span class="iconfont icon-tainjia"></span>
                     </div>
                   </div>
@@ -101,13 +101,13 @@
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">医院</div>
               <div class="zan-cell__bd department_show">
-                <div v-if="!form.hospital" class="department_tip">选择医院(长按删除)</div>
-                <div v-else @longpress="form.hospital=''" class="department_tag">
+                <div v-if="!form.hospital.label" class="department_tip">选择医院(长按删除)</div>
+                <div v-else @longpress="form.hospital={}" class="department_tag">
                   {{form.hospital.label}}
                 </div>
               </div>
               <div class="zan-cell__ft">
-                <navigator v-if="form.hospital.length==0" open-type="navigateTo" url="/pages/search/main?type=hospital" class="zan-btn zan-btn--mini zan-btn--primary">选择医院</navigator>
+                <navigator v-if="!form.hospital.label" open-type="navigateTo" url="/pages/search/main?type=hospital" class="zan-btn zan-btn--mini zan-btn--primary">选择医院</navigator>
               </div>
             </div>
             <div class="zan-cell zan-field">
@@ -121,15 +121,15 @@
                 </view>
               </div>
               <div class="zan-cell__ft">
-                <picker mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
+                <picker mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange($event,1)" :value="picker.department">
                   <button class="zan-btn zan-btn--mini zan-btn--primary">选择科室</button>
                 </picker>
               </div>
             </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">职称</div>
-              <picker v-if="picker.titleList.length" range-key="name" :range="picker.titleList" @change="titleChange" :value="picker.title">
-                <input type="text" :value="picker.titleList[picker.title].name" disabled class="zan-field__input zan-cell__bd" />
+              <picker v-if="picker.titleList.length" range-key="label" :range="picker.titleList" @change="titleChange" :value="picker.title">
+                <input type="text" :value="picker.titleList[picker.title].label" disabled class="zan-field__input zan-cell__bd" />
               </picker>
             </div>
             <div class="zan-cell zan-field">
@@ -137,7 +137,7 @@
               <div class="treatment_info">
                 <div class="treatment_tip zan-c-gray">上传医师资格证书,执业资格证书 图片个数：{{form.certificate.length}} / 9 (长按删除)</div>
                 <div class="treatment_img_list">
-                  <div @longpress="imgsDel(index,'certificate')" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.certificate" :key="index" class="treatment_img_item">
+                  <div @longpress="form.certificate.splice(index,1)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.certificate" :key="index" class="treatment_img_item">
                     <image class="treatment_img_image" :src="item.imageURL+'-webp'"></image>
                   </div>
                   <div @click="imgsAdd('certificate')" class="treatment_img_item">
@@ -219,6 +219,7 @@ import {
 } from "@/utils/api.js";
 import { authType, guid } from "@/utils";
 import * as qiniu from "@/utils/qiniuUploader";
+import WxValidate from "@/utils/validate";
 export default {
   components: {
     cHeader,
@@ -241,6 +242,10 @@ export default {
         ],
         operation: 0,
         operationList: [
+          {
+            key: "0",
+            value: "保密"
+          },
           {
             key: "1",
             value: "否"
@@ -269,14 +274,17 @@ export default {
         code: "",
         // idcard: "",
         department: [], //所有人都可以关联科室 但是医生只能关联一个 其他关联三个
+
         //treatment_info里面包含的信息
-        doctor_name: "",
-        illness_name: "",
-        operation: "1",
-        treatment_images: [],
+        treatment_info: {
+          doctor_name: "",
+          illness_name: "",
+          operation: "1",
+          treatment_images: []
+        },
         //treatment_info-end
 
-        hospital: "", //医院_id
+        hospital: {}, //医院_id
         title: "", //职称string
         certificate: [], //医生证书
         description: "", //医生描述
@@ -288,15 +296,22 @@ export default {
   },
   onShow() {
     let friend = this.$mp.page.data.friend;
-    if (friend) {
+    if (friend && this.form.role == 3) {
       this.form.friend.push(friend);
     }
     let hospital = this.$mp.page.data.hospital;
-    if (hospital) {
+    if (hospital && this.form.role == 2) {
       this.form.hospital = hospital;
     }
   },
   onLoad: function(option) {
+    //修改
+    if (option.type && option.type == "modified") {
+      let userinfo = JSON.parse(JSON.stringify(this.$store.state.user));
+      console.log(userinfo);
+      this.form = userinfo;
+    }
+    // 新建角色
     if (!option.role && this.form.role == "") {
       // 没有选择角色进来
       setTimeout(() => {
@@ -313,12 +328,8 @@ export default {
     } else if (option.role) {
       this.form.role = option.role;
     }
-    if (option.target) {
-      let target = JSON.parse(option.target);
-      this.form.friend.push(target);
-    }
-    //医生职称
-    if (this.form.role == "2") {
+
+    if (this.form.role == 2) {
       this.getTitleList();
     }
     this.getmainDepart();
@@ -405,30 +416,33 @@ export default {
     departmentDel(i) {
       //科室删除时要同时删除代理
       this.form.department.splice(i, 1);
-      this.form.agency.splice(i, 1);
+      if (this.form.agency) {
+        this.form.agency.splice(i, 1);
+      }
     },
-    departmentChange(e) {
+    departmentChange(e, num = 3) {
       //科室选择成功
       let cIndex = e.target.value[1];
       let oSelectArr = this.form.department;
-      if (oSelectArr.length < 3) {
+      if (oSelectArr.length < num) {
         let obj = {
           label: this.viceDepartList[cIndex].label,
           key: this.viceDepartList[cIndex].key
         };
         this.form.department.push(obj);
-        this.form.agency.push({ department: obj, name: "" });
+        if (this.form.agency) {
+          this.form.agency.push({ department: obj, name: "" });
+        }
       } else {
         wx.showToast({
-          title: "最多选择三个科室",
+          title: `最多选择${num}个科室`,
           icon: "none"
         });
       }
     },
     operationChange(e) {
       // 是否手术选择成功
-      this.picker.operation = e.target.value;
-      this.form.operation = this.picker.operationList[e.target.value].key;
+      this.form.treatment_info.operation = e.target.value;
     },
     setsendCodeBtn() {
       setTimeout(() => {
@@ -486,24 +500,27 @@ export default {
         res => {}
       );
     },
-    imgsDel(index, type = "treatment_images") {
-      this.form[type].splice(index, 1);
-    },
-    imgsAdd(type = "treatment_images") {
+    imgsAdd(type = "treatment_info") {
       let self = this;
-      if (this.form[type].length < 9) {
+      this.type = this.type || 0;
+      if (this.type < 9) {
         wx
           .chooseImageAsync({
-            count: (9 - this.form[type].length) | 0, // 默认9
+            count: (9 - this.type) | 0, // 默认9
             sizeType: ["original", "compressed"], // 可以指定是原图还是压缩图，默认二者都有
             sourceType: ["album", "camera"] // 可以指定来源是相册还是相机，默认二者都有
           })
           .then(async res => {
             var tempFilePaths = res.tempFilePaths;
+            self.type += tempFilePaths.length;
             tempFilePaths.forEach(src => {
               self.uploadImg(src, res => {
                 // 返回bucket文件夹名 fsize文件大小 hash值 imageURL图片地址 key文件名
-                self.form[type].push(res);
+                if (type == "treatment_info") {
+                  self.form.treatment_info.treatment_images.push(res);
+                } else if (type == "certificate") {
+                  self.form.certificate.push(res);
+                }
               });
             });
           });
@@ -523,27 +540,73 @@ export default {
       console.log(e);
     },
     validate() {
-      let form = this.form;
-      // form.forEach((item,value)=>{
-      //   switch(item){
-      //     case ''
-      //   }
-      // })
+      // 验证字段的规则
+      const rules = {
+        name: {
+          required: true,
+          name: true
+        },
+        phone: {
+          required: true,
+          phone: true
+        },
+        code: {
+          required: true,
+          code: true
+        }
+      };
+
+      // 验证字段的提示信息，若不传则调用默认的信息
+      const messages = {
+        name: {
+          required: "请输入姓名",
+          name: "请正确输入姓名"
+        },
+        phone: {
+          required: "请输入手机号",
+          phone: "请输入正确的手机号"
+        },
+        code: {
+          required: "请输入验证码",
+          code: "请输入正确的验证码"
+        }
+      };
+      // 创建实例对象
+      this.WxValidate = new WxValidate(rules, messages);
+      if (!this.WxValidate.checkForm(this.form)) {
+        const error = this.WxValidate.errorList[0];
+        wx.showToast({
+          title: error.msg,
+          icon: "none",
+          mask: true
+        });
+        return false;
+      } else {
+        return true;
+      }
     },
     async submit(e) {
-      await update(this.form).then(res => {
-        wx.showToast({
-          title: "更新成功",
-          icon: "success"
-        });
-      });
+      let can = this.validate();
       let self = this;
-      wx.switchTab({
-        url: "/pages/my/main",
-        success() {
-          self.$store.dispatch("GetInfo");
-        }
-      });
+      if (can) {
+        wx.showLoading({
+          title: "上传中...",
+          mask: true
+        });
+        update(this.form).then(res => {
+          wx.hideLoading();
+          wx.showToast({
+            title: "更新成功",
+            icon: "success"
+          });
+          wx.switchTab({
+            url: "/pages/my/main",
+            success() {
+              self.$store.dispatch("GetInfo");
+            }
+          });
+        });
+      }
     }
   }
 };

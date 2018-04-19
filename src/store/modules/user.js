@@ -4,13 +4,16 @@ const user = {
   state: {
     id: "",
     name: "",
-    avatar: "",
+    avatar: {},
+    avatarUrl: '',
     role: "", // 0:游客 1:普通用户 2:医生 3:经理人 9:前台页面管理员
+    rolelist: ['游客', '用户', '医生', '经理人'],
     status: "", // 用户账号状态 0保留 1未激活 2已激活 3已锁定(也叫审核未通过) 9已删除
     phone: "",
     hospital: "",
     certificate: '',
     gender: '',
+    genderlist: ['未知', '男性', '女性'],// 0代表未知 1代表男性 2代表女性
     department: '',
     agency: '',
     friend: '',
@@ -28,6 +31,9 @@ const user = {
     },
     SET_AVATAR: (state, param) => {
       state.avatar = param;
+    },
+    SET_AVATARURL: (state, param) => {
+      state.avatarUrl = param;
     },
     SET_ROLE: (state, param) => {
       state.role = param;
@@ -95,7 +101,8 @@ const user = {
             commit("SET_ID", data._id);
             commit("SET_ROLE", data.role);
             commit("SET_NAME", data.name);
-            commit("SET_AVATAR", data.avatarUrl);
+            commit("SET_AVATAR", data.avatar);
+            commit("SET_AVATARURL".data.avatarUrl);
             commit("SET_STATUS", data.status);
             commit("SET_PHONE", data.phone);
             resolve(response);
@@ -115,7 +122,8 @@ const user = {
             commit("SET_ID", data._id);
             commit("SET_ROLE", data.role);
             commit("SET_NAME", data.name);
-            commit("SET_AVATAR", data.avatarUrl);
+            commit("SET_AVATARURL", data.avatarUrl);
+            commit("SET_AVATAR", data.avatar);
             commit("SET_STATUS", data.status);
             commit("SET_PHONE", data.phone);
             commit("SET_DEPARTMENT", data.department);
