@@ -83,19 +83,16 @@ export default {
   height: 60px;
   border-radius: 6px;
 }
+
 .zan-cell__bd {
-  flex: 1 1 auto;
   min-width: 60px;
+  flex: 1;
 }
 .zan-cell__ft {
   text-align: left;
+  word-break: break-all;
 }
-.myinfo {
-  height: 100%;
-  display: flex;
-  flex-flow: column;
-  justify-content: space-between;
-}
+
 .btn {
   margin: 30px 20px;
 }

@@ -129,7 +129,7 @@
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">职称</div>
               <picker v-if="picker.titleList.length" range-key="label" :range="picker.titleList" @change="titleChange" :value="picker.title">
-                <input type="text" :value="picker.titleList[picker.title].label" disabled class="zan-field__input zan-cell__bd" />
+                <input type="text" v-model="picker.titleList[picker.title].label" disabled class="zan-field__input zan-cell__bd" />
               </picker>
             </div>
             <div class="zan-cell zan-field">
@@ -149,7 +149,7 @@
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">简介</div>
               <div class="zan-cell__bd">
-                <textarea v-model="form.description" placeholder="个人简介(擅长领域)" />
+                <textarea class="desc_textarea" v-model="form.description" placeholder="个人简介(擅长领域)" />
               </div>
             </div>
           </div>
@@ -345,12 +345,12 @@ export default {
       titleList().then(res => {
         this.picker.titleList = res.data;
         // 设置默认值
-        this.form.title = res.data[0]["_id"];
+        this.form.title = res.data[0]["label"];
       });
     },
     titleChange(e) {
       this.picker.title = e.target.value;
-      this.form.title = this.picker.titleList[this.picker.title]._id;
+      this.form.title = this.picker.titleList[this.picker.title].label;
     },
     getmainDepart() {
       //获取主列表并设置默认值
@@ -553,6 +553,11 @@ export default {
         code: {
           required: true,
           code: true
+        },
+        description: {
+          required: true,
+          minlength: 10,
+          maxlength: 140
         }
       };
 
@@ -569,6 +574,11 @@ export default {
         code: {
           required: "请输入验证码",
           code: "请输入正确的验证码"
+        },
+        description: {
+          required: "请填写自我介绍",
+          minlength: "自我介绍不可以小于10个字",
+          maxlength: "自我介绍不可以大于140个字"
         }
       };
       // 创建实例对象
