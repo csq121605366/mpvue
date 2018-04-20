@@ -83,3 +83,11 @@ export function hospitalSearch(data) {
     data
   });
 }
+
+export function articleCreate(data) {
+  return wx.requestAsync({
+    url: 'app/article/create',
+    method: 'POST',
+    data
+  })
+}

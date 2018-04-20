@@ -8,7 +8,7 @@ const asyncWrap = fn => (options = {}) =>
       baseUrl: "http://localhost:7001/api/",
       baseHeader: {
         Authorization: "Bearer " + wx.getStorageSync("token"),
-        "content-type": "application/x-www-form-urlencoded"
+        "content-type": "application/json"
       },
       success: res => {
         console.log("res", res);
@@ -20,7 +20,7 @@ const asyncWrap = fn => (options = {}) =>
               store.dispatch("Login").then(res => {
                 store.dispatch("GetInfo");
               });
-              if(res.data.error&&res.data.error.indexOf('expired')){
+              if (res.data.error && res.data.error.indexOf('expired')) {
                 wx.showToast({
                   title: '开了个小差,已经回来了',
                   icon: "none",
@@ -62,3 +62,4 @@ wx.requestAsync = asyncWrap("request");
 wx.loginAsync = asyncWrap("login");
 wx.chooseImageAsync = asyncWrap("chooseImage");
 wx.uploadFileAsync = asyncWrap("uploadFile");
+wx.chooseVideoAsync = asyncWrap('chooseVideo');

@@ -36,7 +36,8 @@ export default {
       "pages/updateuserinfo/main",
       "pages/addfriend/main",
       "pages/search/main",
-      "^pages/article/main"
+      "^pages/article/main",
+      "pages/article_content/main"
     ],
     window: {
       // backgroundTextStyle: "light",
