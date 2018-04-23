@@ -1,10 +1,9 @@
-import * as _ from "lodash";
-wx._ = _;
+// import * as _ from "lodash";
+// wx._ = _;
 import store from "@/store";
 
 const asyncWrap = fn => (options = {}) =>
   new Promise((resolve, reject) => {
-    console.log(store)
     let conf = {
       // baseUrl: "http://localhost:7001/api/",
       baseUrl: store.getters.apiUrl,
@@ -13,7 +12,6 @@ const asyncWrap = fn => (options = {}) =>
         "content-type": "application/json"
       },
       success: res => {
-        console.log("res", res);
         if (res.data) {
           if (res.data.success) {
             resolve(res.data);
@@ -55,8 +53,8 @@ const asyncWrap = fn => (options = {}) =>
       }
     };
     options.url = conf.baseUrl + options.url;
-    options.header = _.assign({}, conf.baseHeader, options.header);
-    let opt = _.assign({}, conf, options);
+    options.header = Object.assign({}, conf.baseHeader, options.header);
+    let opt = Object.assign({}, conf, options);
     wx[fn](opt);
   });
 

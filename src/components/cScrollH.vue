@@ -227,7 +227,7 @@ export default {
     },
     calculateH(index) {
       let num = this.sublist[index].data.length;
-      this.tablist.height = num * 126 + 10;
+      this.tablist.height = num * 117 + 10;
     },
     handleScrollView_click(e) {
       this.tablist.current = e.currentTarget.dataset.id;

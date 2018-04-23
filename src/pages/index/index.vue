@@ -32,7 +32,7 @@
   height: 100px;
   width: 100%;
 }
-.loading-img{
+.loading-img {
   height: 20px;
   width: 100px;
   display: inline-block;
@@ -64,7 +64,7 @@
       </div>
       <!-- 首页顶部搜索和链接-end -->
       <c-article></c-article>
-      <c-scroll></c-scroll>
+      <c-tap limit="2"></c-tap>
     </div>
   </div>
 </template>
@@ -73,7 +73,7 @@
 import cHeader from "@/components/cHeader";
 import cSearch from "@/components/cSearch";
 import cArticle from "@/components/cArticle";
-import cScroll from "@/components/cScrollH";
+import cTap from "@/components/cTap";
 export default {
   data() {
     return {
@@ -84,7 +84,7 @@ export default {
     cHeader,
     cSearch,
     cArticle,
-    cScroll
+    cTap
   },
   onPullDownRefresh() {
     // console.log(this.$children[3])
@@ -92,6 +92,9 @@ export default {
     setTimeout(() => {
       wx.stopPullDownRefresh();
     }, 800);
+  },
+  onReachBottom() {
+    this.$children[this.$children.length - 1].loadMore();
   },
   methods: {
     bindViewTap() {

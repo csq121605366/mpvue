@@ -76,12 +76,17 @@ export default {
               this.list.push(item);
             });
             this.last_id = res.data.last_id;
+          } else {
+            wx.showToast({
+              title: "我也是有底线的",
+              icon: "none"
+            });
           }
           wx.hideLoading();
         });
       } else {
         wx.showToast({
-          title: "没有更多了",
+          title: "我也是有底线的",
           icon: "none"
         });
       }
@@ -91,7 +96,7 @@ export default {
       let prevPage = pages[pages.length - 2]; //上一页面
       prevPage.setData({
         //直接给上移页面赋值
-        hospital:item
+        hospital: item
       });
       wx.navigateBack();
     }
