@@ -1,5 +1,6 @@
 const getters = {
-
+  rootUrl: state => state.app.rootUrl,
+  apiUrl: state => state.app.apiUrl,
   qiniuTicket: state => state.app.qiniuTicket,
   authType: state => state.app.authType,
 

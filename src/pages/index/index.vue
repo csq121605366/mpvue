@@ -22,11 +22,27 @@
 .toptap-tap__li .iconfont {
   font-size: 20px;
 }
+.loading {
+  position: absolute;
+  background-color: #fff;
+  left: 0;
+  padding-top: 10px;
+  top: 70px;
+  text-align: center;
+  height: 100px;
+  width: 100%;
+}
+.loading-img{
+  height: 20px;
+  width: 100px;
+  display: inline-block;
+}
 </style>
 
 <template>
   <div class="app">
     <c-header fixed title="首页"></c-header>
+    <div class="loading"><img class="loading-img" src="/static/loading.gif" alt=""></div>
     <div class="container">
       <!-- 首页顶部搜索和链接 -->
       <!-- 搜索框 -->
@@ -49,7 +65,7 @@
       </div>
       <!-- 首页顶部搜索和链接-end -->
       <c-article></c-article>
-      <scroll></scroll>
+      <c-scroll></c-scroll>
     </div>
   </div>
 </template>
@@ -58,24 +74,22 @@
 import cHeader from "@/components/cHeader";
 import cSearch from "@/components/cSearch";
 import cArticle from "@/components/cArticle";
-import Scroll from "@/components/cScrollH";
+import cScroll from "@/components/cScrollH";
 export default {
   data() {
     return {
-      motto: "Hello World",
       userInfo: {}
     };
   },
-
   components: {
     cHeader,
     cSearch,
     cArticle,
-    Scroll
+    cScroll
   },
-
   onPullDownRefresh() {
-    console.log("刷新了");
+    // console.log(this.$children[3])
+    this.$children[this.$children.length - 1].refresh();
     setTimeout(() => {
       wx.stopPullDownRefresh();
     }, 800);
@@ -87,9 +101,9 @@ export default {
     },
     getUserInfo() {
       if (!this.$store.getters.id) {
-        this.$store.dispatch("Login").then(()=>{
-          this.$store.dispatch('GetInfo')
-        })
+        this.$store.dispatch("Login").then(() => {
+          this.$store.dispatch("GetInfo");
+        });
       }
     },
     clickHandle(msg, ev) {

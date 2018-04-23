@@ -109,11 +109,19 @@ export function articleList(data) {
     data
   });
 }
-
+//文章获取详情
 export function getDetail(data) {
   return wx.requestAsync({
     url: "app/article/getdetail",
     method: "POST",
     data
   });
+}
+
+export function getPaging(data) {
+  return wx.requestAsync({
+    url: 'app/article/paging',
+    method: 'POST',
+    data
+  })
 }

@@ -5,8 +5,14 @@
       <div class="zan-panel">
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">文章类型</div>
-          <picker class="article_sort" range-key="value" :range="picker.sortlist" @change="picker.sort = $event.target.value" :value="picker.sort">
+          <picker class="article_sort" range-key="value" :range="picker.sortlist" @change="sortChange($event)" :value="picker.sort">
             <input type="text" :value="picker.sortlist[picker.sort]?picker.sortlist[picker.sort].value:''" placeholder="点击选择" disabled class="zan-field__input zan-cell__bd" />
+          </picker>
+        </div>
+        <div class="zan-cell zan-field">
+          <div class="zan-cell__hd zan-field__title">展示状态</div>
+          <picker class="article_sort" range-key="value" :range="picker.typelist" @change="typeChange($event)" :value="picker.type">
+            <input type="text" :value="picker.typelist[picker.type]?picker.typelist[picker.type].value:''" placeholder="点击选择" disabled class="zan-field__input zan-cell__bd" />
           </picker>
         </div>
         <div class="zan-cell zan-field">
@@ -19,7 +25,7 @@
         </div>
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">手术进程</div>
-          <picker class="article_sort" :range="picker.timelist" @change="picker.time = $event.target.value" :value="picker.time">
+          <picker class="article_sort" :range="picker.timelist" @change="timeChange($event)" :value="picker.time">
             <input type="text" :value="picker.timelist[picker.time]?picker.timelist[picker.time]:''" placeholder="点击选择" disabled class="zan-field__input zan-cell__bd" />
           </picker>
         </div>
@@ -61,7 +67,7 @@
       </div>
       <div class="btns">
         <button class="btn zan-btn--primary">预览</button>
-        <button @click="publish" class="btn zan-btn--primary">确定上传</button>
+        <button @click="publish" class="btn zan-btn--primary">发布</button>
       </div>
     </div>
   </div>
@@ -126,7 +132,6 @@ export default {
   },
   onShow() {
     let article_id = this.$mp.page.data.article_id;
-    article_id = "5adcaead071feb644403ade6";
     if (article_id) {
       this.form.article_id = article_id;
       getDetail({ article_id }).then(res => {
@@ -141,6 +146,18 @@ export default {
         this.qiniuTicket = res.data.qiniuTicket;
         this.qiniuDomain = res.data.qiniuDomain;
       });
+    },
+    sortChange(e) {
+      this.picker.sort = e.target.value;
+      this.form.sort = this.picker.sortlist[this.picker.sort].key;
+    },
+    timeChange(e) {
+      this.picker.time = e.target.value;
+      this.form.illness_time = this.picker.timelist[this.picker.time];
+    },
+    typeChange(e) {
+      this.picker.type = e.target.value;
+      this.form.type = this.picker.typelist[this.picker.type].key;
     },
     async upload(filePath, cb) {
       let self = this;
@@ -299,7 +316,7 @@ export default {
         articlePublish({ article_id: this.form.article_id }).then(res => {
           if (res.success) {
             wx.showToast({
-              title: `创建成功`,
+              title: `操作成功`,
               mask: true,
               icon: "none",
               success() {

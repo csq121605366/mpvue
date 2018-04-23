@@ -63,10 +63,10 @@
             </div>
           </div>
           <div class="zan-panel">
-            <div class="zan-cell zan-cell--access">
+            <navigator url="/pages/article_list/main" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的文章</div>
               <div class="zan-cell__ft"></div>
-            </div>
+            </navigator>
             <navigator url="/pages/article/main" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">写文章</div>
               <div class="zan-cell__ft"></div>

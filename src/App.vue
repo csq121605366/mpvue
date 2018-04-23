@@ -1,8 +1,6 @@
 <script>
 export default {
-  created() {
-    
-  }
+  created() {}
 };
 </script>
 
@@ -21,9 +19,10 @@ page {
 }
 .container {
   background-color: #f0f0f0;
-  padding-top: 70px;
+  position: relative;
+  top: 70px;
+  left: 0;
   box-sizing: border-box;
-  height: 100%;
   /* overflow: scroll; */
   width: 100%;
 }

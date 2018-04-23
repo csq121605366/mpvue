@@ -4,9 +4,10 @@ import store from "@/store";
 
 const asyncWrap = fn => (options = {}) =>
   new Promise((resolve, reject) => {
+    console.log(store)
     let conf = {
       // baseUrl: "http://localhost:7001/api/",
-      baseUrl: "http://192.168.166.3:7001/api/",
+      baseUrl: store.getters.apiUrl,
       baseHeader: {
         Authorization: "Bearer " + wx.getStorageSync("token"),
         "content-type": "application/json"
