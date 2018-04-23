@@ -42,7 +42,6 @@
 <template>
   <div class="app">
     <c-header fixed title="首页"></c-header>
-    <div class="loading"><img class="loading-img" src="/static/loading.gif" alt=""></div>
     <div class="container">
       <!-- 首页顶部搜索和链接 -->
       <!-- 搜索框 -->

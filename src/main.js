@@ -50,7 +50,7 @@ export default {
     tabBar: {
       list: [
         {
-          pagePath: "pages/index/main",
+          pagePath: "pages/myinfo/main",
           text: "首页"
         },
         {
