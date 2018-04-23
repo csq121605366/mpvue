@@ -86,8 +86,34 @@ export function hospitalSearch(data) {
 
 export function articleCreate(data) {
   return wx.requestAsync({
-    url: 'app/article/create',
-    method: 'POST',
+    url: "app/article/create",
+    method: "POST",
     data
-  })
+  });
+}
+
+//发表文章
+export function articlePublish(data) {
+  return wx.requestAsync({
+    url: "app/article/publish",
+    method: "POST",
+    data
+  });
+}
+
+//获取文章内容
+export function articleList(data) {
+  return wx.requestAsync({
+    url: "app/article/list",
+    method: "POST",
+    data
+  });
+}
+
+export function getDetail(data) {
+  return wx.requestAsync({
+    url: "app/article/getdetail",
+    method: "POST",
+    data
+  });
 }

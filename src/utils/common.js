@@ -5,7 +5,8 @@ import store from "@/store";
 const asyncWrap = fn => (options = {}) =>
   new Promise((resolve, reject) => {
     let conf = {
-      baseUrl: "http://localhost:7001/api/",
+      // baseUrl: "http://localhost:7001/api/",
+      baseUrl: "http://192.168.166.3:7001/api/",
       baseHeader: {
         Authorization: "Bearer " + wx.getStorageSync("token"),
         "content-type": "application/json"
@@ -20,9 +21,9 @@ const asyncWrap = fn => (options = {}) =>
               store.dispatch("Login").then(res => {
                 store.dispatch("GetInfo");
               });
-              if (res.data.error && res.data.error.indexOf('expired')) {
+              if (res.data.error && res.data.error.indexOf("expired")) {
                 wx.showToast({
-                  title: '开了个小差,已经回来了',
+                  title: "开了个小差,已经回来了",
                   icon: "none",
                   duration: 2000
                 });
@@ -62,4 +63,4 @@ wx.requestAsync = asyncWrap("request");
 wx.loginAsync = asyncWrap("login");
 wx.chooseImageAsync = asyncWrap("chooseImage");
 wx.uploadFileAsync = asyncWrap("uploadFile");
-wx.chooseVideoAsync = asyncWrap('chooseVideo');
+wx.chooseVideoAsync = asyncWrap("chooseVideo");

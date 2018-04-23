@@ -54,14 +54,14 @@
         <div class="zan-cell content">
           <div class="zan-cell__hd zan-field__title">正文内容</div>
           <div class="content-prev">
-
+            {{form.pre_content}}
           </div>
           <button @click="addContent" class="zan-btn zan-btn--mini zan-btn--primary">添加和修改正文</button>
         </div>
       </div>
       <div class="btns">
         <button class="btn zan-btn--primary">预览</button>
-        <button class="btn zan-btn--primary">确定上传</button>
+        <button @click="publish" class="btn zan-btn--primary">确定上传</button>
       </div>
     </div>
   </div>
@@ -71,7 +71,8 @@
 import cHeader from "@/components/cHeader";
 import { qiniuTicket } from "@/utils/api.js";
 import * as qiniu from "@/utils/qiniuUploader";
-import { articleCreate } from "@/utils/api";
+import { articleCreate, getDetail, articlePublish } from "@/utils/api";
+import WxValidate from "@/utils/validate";
 export default {
   components: {
     cHeader
@@ -107,6 +108,7 @@ export default {
         ]
       },
       form: {
+        article_id: "",
         sort: "1", //文章分类 1日志 2手术记录 3科普文章
         title: "", //标题
         illness_name: "", //疾病名称
@@ -114,24 +116,32 @@ export default {
         type: "1", //文章展示模式 1公开 2相同科室查看 3私有
         images: [], // 文章相关图片
         videos: [], // 视频资源
-        content: "" //文章内容
+        pre_content: "" //文章预览内容
       }
     };
   },
   mounted() {
     // 获取七牛ticket
-    qiniuTicket().then(res => {
-      this.qiniuRegion = res.data.qiniuRegion;
-      this.qiniuTicket = res.data.qiniuTicket;
-      this.qiniuDomain = res.data.qiniuDomain;
-    });
+    this.qiniu_init();
   },
   onShow() {
-    if (this.$mp.page.data.articleContent) {
-      this.form.content = this.$mp.page.data.articleContent;
+    let article_id = this.$mp.page.data.article_id;
+    article_id = "5adcaead071feb644403ade6";
+    if (article_id) {
+      this.form.article_id = article_id;
+      getDetail({ article_id }).then(res => {
+        Object.assign(this.form, res.data);
+      });
     }
   },
   methods: {
+    qiniu_init() {
+      qiniuTicket().then(res => {
+        this.qiniuRegion = res.data.qiniuRegion;
+        this.qiniuTicket = res.data.qiniuTicket;
+        this.qiniuDomain = res.data.qiniuDomain;
+      });
+    },
     async upload(filePath, cb) {
       let self = this;
       // filePath, success, fail, options, progress
@@ -226,10 +236,85 @@ export default {
       });
     },
     addContent() {
-      // url="/pages/article_content/main"
-      articleCreate(this.form).then(res => {
-        console.log(res);
+      wx.showLoading({
+        title: "上传中...",
+        mask: true
       });
+      articleCreate(this.form).then(res => {
+        wx.hideLoading();
+        if (res.data && res.data.article_id) {
+          wx.navigateTo({
+            url: `/pages/article_content/main?article_id=${res.data.article_id}`
+          });
+        } else {
+          wx.showToast({
+            title: `创建失败`,
+            mask: true,
+            icon: "none"
+          });
+        }
+      });
+    },
+    validate() {
+      // 验证字段的规则
+      const rules = {
+        title: {
+          required: true,
+          minlength: 1,
+          maxlength: 25
+        },
+        article_id: {
+          required: true
+        }
+      };
+
+      // 验证字段的提示信息，若不传则调用默认的信息
+      const messages = {
+        title: {
+          required: "请填写文章标题",
+          minlength: "文章标题最少一个字",
+          maxlength: "文章标题最多25个字"
+        },
+        article_id: {
+          required: "请添加正文内容"
+        }
+      };
+      // 创建实例对象
+      this.WxValidate = new WxValidate(rules, messages);
+      if (!this.WxValidate.checkForm(this.form)) {
+        const error = this.WxValidate.errorList[0];
+        wx.showToast({
+          title: error.msg,
+          icon: "none",
+          mask: true
+        });
+        return false;
+      } else {
+        return true;
+      }
+    },
+    publish() {
+      let can = this.validate();
+      if (can) {
+        articlePublish({ article_id: this.form.article_id }).then(res => {
+          if (res.success) {
+            wx.showToast({
+              title: `创建成功`,
+              mask: true,
+              icon: "none",
+              success() {
+                wx.navigateBack();
+              }
+            });
+          } else {
+            wx.showToast({
+              title: res.message,
+              mask: true,
+              icon: "none"
+            });
+          }
+        });
+      }
     }
   }
 };
