@@ -3,7 +3,7 @@
     <c-header back fixed title="文章列表"></c-header>
     <div class="container">
       <div class="list">
-        <c-list :user_id="id"></c-list>
+        <c-tap :user_id="id"></c-tap>
       </div>
     </div>
   </div>
@@ -11,13 +11,13 @@
 
 <script>
 import cHeader from "@/components/cHeader";
-import cList from "@/components/cScrollH";
+import cTap from "@/components/cTap";
 import { mapGetters } from "vuex";
 
 export default {
   components: {
     cHeader,
-    cList
+    cTap
   },
   data() {},
   computed: {

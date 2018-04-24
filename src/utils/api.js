@@ -125,3 +125,21 @@ export function getPaging(data) {
     data
   })
 }
+
+// 创建问题或回答
+export function qaCreate(data) {
+  return wx.requestAsync({
+    url: 'app/qa/create',
+    method: 'POST',
+    data
+  })
+}
+
+
+export function qaList(data) {
+  return wx.requestAsync({
+    url: 'app/qa/list',
+    method: 'POST',
+    data
+  })
+}

@@ -27,19 +27,21 @@ export default {
   config: {
     // 页面前带有 ^ 符号的，会被编译成首页，其他页面可以选填，我们会自动把 webpack entry 里面的入口页面加进去
     pages: [
-      "pages/index/main",
-      "pages/qa/main",
-      "pages/my/main",
-      "pages/myinfo/main",
-      "pages/department/main",
-      "pages/roleselect/main",
-      "pages/updateuserinfo/main",
-      "pages/addfriend/main",
-      "pages/search/main",
-      "pages/article/main",
-      "pages/article_content/main",
-      "pages/article_list/main",
-      "^pages/article_detail/main"
+      "pages/index/main", //首页
+      "^pages/qa/main", //问诊
+      "pages/my/main",   //我的
+      "pages/qa_create/main", //快速提问
+      "pages/qa_list/main", //我的问题列表
+      "pages/myinfo/main", //我的信息展示
+      "pages/mydepartment/main", //我的科室
+      "pages/roleselect/main", //角色选择
+      "pages/updateuserinfo/main",//更新个人信息
+      "pages/addfriend/main", //添加潜在客户
+      "pages/search/main", //搜索
+      "pages/article/main", //添加文章
+      "pages/article_content/main", //添加文章正文
+      "pages/article_list/main",//文章列表
+      "pages/article_detail/main" //文章详情
     ],
     window: {
       // backgroundTextStyle: "light",
@@ -48,19 +50,27 @@ export default {
       navigationStyle: "custom"
     },
     tabBar: {
+      color: '#2b2b2b',
+      selectedColor: '#2bb5f5',
       list: [
         {
           pagePath: "pages/index/main",
+          iconPath: '/static/index-b-1.png',
+          selectedIconPath: '/static/index-l-1.png',
           text: "首页"
         },
         {
           pagePath: "pages/qa/main",
-          text: "问答"
+          iconPath: '/static/qa-b-1.png',
+          selectedIconPath: '/static/qa-l-1.png',
+          text: "问诊"
         },
         {
           pagePath: "pages/my/main",
+          iconPath: '/static/my-b-1.png',
+          selectedIconPath: '/static/my-l-1.png',
           text: "我的"
-        } 
+        }
       ]
     }
   }

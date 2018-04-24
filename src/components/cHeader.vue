@@ -60,9 +60,9 @@ export default {
   z-index: 999;
 }
 .c-header-button {
-  -webkit-box-flex: 0.5;
-  -ms-flex: 0.5;
-  flex: 0.5;
+  font-size: 16px;
+  width: 40px;
+  padding: 10px 10px 10px 0;
 }
 .c-header-button > a {
   color: inherit;

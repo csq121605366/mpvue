@@ -78,6 +78,9 @@ export default {
 </script>
 
 <style scoped>
+.container{
+  background-color: #fff;
+}
 .avatar ._img {
   width: 60px;
   height: 60px;

@@ -35,12 +35,12 @@
               <div class="zan-cell__bd">我的信息</div>
               <div class="zan-cell__ft"></div>
             </navigator>
-            <div class="zan-cell zan-cell--access">
+            <navigator  url="/pages/qa_list/main" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的问题</div>
               <div class="zan-cell__ft"></div>
-            </div>
+            </navigator>
             <div class="zan-cell zan-cell--access">
-              <div class="zan-cell__bd">我关注的医生</div>
+              <div class="zan-cell__bd">我关注的科室</div>
               <div class="zan-cell__ft"></div>
             </div>
           </div>

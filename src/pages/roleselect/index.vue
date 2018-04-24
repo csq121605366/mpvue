@@ -68,6 +68,7 @@ export default {
   flex-flow: row;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
 .role {
   background-color: #fff;

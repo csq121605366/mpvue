@@ -17,10 +17,13 @@ page {
   color: #2b2b2b;
   font-size: 14px;
 }
+.zan-tab__bd{
+  justify-content: center;
+}
 .container {
   background-color: #f0f0f0;
   position: relative;
-  top: 70px;
+  top: 60px;
   left: 0;
   box-sizing: border-box;
   /* overflow: scroll; */

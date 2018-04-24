@@ -44,9 +44,9 @@ export function debounce(func, wait, immediate) {
   // immediate默认为false
   var timeout, args, context, timestamp, result;
 
-  var later = function() {
+  var later = function () {
     // 当wait指定的时间间隔期间多次调用_.debounce返回的函数，则会不断更新timestamp的值，导致last < wait && last >= 0一直为true，从而不断启动新的计时器延时执行func
-    var last = _.now() - timestamp;
+    var last = Date.now() - timestamp;
 
     if (last < wait && last >= 0) {
       timeout = setTimeout(later, wait - last);
@@ -59,10 +59,10 @@ export function debounce(func, wait, immediate) {
     }
   };
 
-  return function() {
+  return function () {
     context = this;
     args = arguments;
-    timestamp = _.now();
+    timestamp = Date.now();
     // 第一次调用该方法时，且immediate为true，则调用func函数
     var callNow = immediate && !timeout;
     // 在wait指定的时间间隔内首次调用该方法，则启动计时器定时调用func函数
@@ -81,7 +81,7 @@ export function throttle(func, wait, leading, trailing) {
   var timer,
     lastCall = 0,
     flag = true;
-  return function() {
+  return function () {
     var context = this;
     var args = arguments;
     var now = +new Date();
@@ -91,7 +91,7 @@ export function throttle(func, wait, leading, trailing) {
       return func.apply(context, args);
     }
     if (!timer && trailing && !(flag && leading)) {
-      timer = setTimeout(function() {
+      timer = setTimeout(function () {
         timer = null;
         lastCall = +new Date();
         func.apply(context, args);
@@ -108,7 +108,7 @@ export function curry(func) {
   return function curried() {
     var args = [].slice.call(arguments);
     if (args.length < l) {
-      return function() {
+      return function () {
         var argsInner = [].slice.call(arguments);
         return curried.apply(this, args.concat(argsInner));
       };

@@ -308,7 +308,6 @@ export default {
     //修改
     if (option.type && option.type == "modified") {
       let userinfo = JSON.parse(JSON.stringify(this.$store.state.user));
-      console.log(userinfo);
       this.form = userinfo;
     }
     // 新建角色
@@ -553,14 +552,15 @@ export default {
         code: {
           required: true,
           code: true
-        },
-        description: {
+        }
+      };
+      if (this.form.role == "2") {
+        rules.description = {
           required: true,
           minlength: 10,
           maxlength: 140
-        }
-      };
-
+        };
+      }
       // 验证字段的提示信息，若不传则调用默认的信息
       const messages = {
         name: {
@@ -607,12 +607,16 @@ export default {
           wx.hideLoading();
           wx.showToast({
             title: "更新成功",
-            icon: "success"
-          });
-          wx.switchTab({
-            url: "/pages/my/main",
-            success() {
-              self.$store.dispatch("GetInfo");
+            icon: "success",
+            success: function() {
+              wx.switchTab({
+                url: "/pages/my/main",
+                success() {
+                  self.$store.dispatch("Login").then(_ => {
+                    self.$store.dispatch("GetInfo");
+                  });
+                }
+              });
             }
           });
         });
@@ -623,6 +627,9 @@ export default {
 </script>
 
 <style scpoed>
+.container {
+  height: 100%;
+}
 ._input {
   color: #949494;
 }

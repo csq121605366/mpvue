@@ -6,6 +6,7 @@
 }
 
 .tablist_list {
+  margin-top: 8px;
   position: relative;
   width: auto;
 }
@@ -75,6 +76,11 @@
   height: 60px;
   border-radius: 6px;
 }
+.none {
+  text-align: center;
+  padding: 10px 0;
+  font-size: 16px;
+}
 </style>
 
 
@@ -82,12 +88,12 @@
   <div class="tablist">
     <ZanTab v-bind="sublist" :componentId="'sublist'" :handleZanTabChange="menuChange"></ZanTab>
     <div class="tablist_list">
-      <div v-for="(item,index) in sublist.list" v-if="item.id ==sublist.selectedId" :key="index" class="tablist_list_item tablist_article">
+      <div v-for="(item,index) in sublist.list" v-if="item.id == sublist.selectedId" :key="index" class="tablist_list_item tablist_article">
         <div v-if="item.data.length" v-for="(x,i) in item.data" :key="x" @click="navigate(x._id)" class="tablist_article_item zan-hairline--bottom">
           <div class="tablist_article_cnt">
             <h3 class="tablist_article_title zan-ellipsis">{{x.title}}</h3>
             <div class="tablist_article_text zan-ellipsis--l2">{{x.pre_content}}</div>
-            <div class="tablist_article_author">
+            <div v-if="x.user_id" class="tablist_article_author">
               <img class="tablist_article_avatar" :src="x.user_id.avatar.imageURL" />
               <span>{{x.user_id.name}}</span>
               <view class="tablist_article_tag">{{x.illness_name}}</view>
@@ -95,9 +101,10 @@
             </div>
           </div>
           <div class="tablist_article_banner">
-            <img class="tablist_article_img" :src="x.images.length?x.images[0].imageURL:x.user_id.avatar.imageURL" alt="">
+            <img v-if="x.images.length" class="tablist_article_img" :src="x.images[0].imageURL" alt="">
           </div>
         </div>
+        <div class="none" v-if="!item.data.length">没有内容</div>
       </div>
     </div>
   </div>
@@ -153,7 +160,6 @@ export default {
       this._initData();
     },
     loadMore() {
-      console.log("test");
       let api = this.sublist.selectedId;
       let num = api.match(/\d/)[0];
       let last_id = this.sublist.list[num - 1].last_id;
@@ -192,6 +198,7 @@ export default {
         if (res.data.length) {
           this.sublist.list[sort - 1].data = res.data;
           this.sublist.list[sort - 1].last_id = res.data[0]._id;
+          console.log(this.sublist.list[sort - 1].data);
         }
       });
     },
@@ -203,7 +210,6 @@ export default {
     menuChange(e) {
       const { componentId, selectedId } = e;
       this[componentId].selectedId = selectedId;
-      console.log(selectedId);
     }
   }
 };

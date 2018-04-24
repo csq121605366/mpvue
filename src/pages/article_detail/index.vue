@@ -5,8 +5,12 @@
       <div v-if="article" class="detail">
         <div class="hd">
           <h1 class="title">{{article.title}}</h1>
+          <p class="subtitle">科室：
+            <span class="author">{{article.department.label}}</span>类型：
+            <span class="author">{{sortList[article.sort]}}</span>
+          </p>
           <p class="subtitle">作者：
-            <span class="author">{{article.author}}</span>{{article.meta.created}}</p>
+            <span class="author">{{article.author}}</span>{{article.created}}</p>
         </div>
         <div class="cnt">
           <rich-text :nodes="article.content"></rich-text>
@@ -33,6 +37,7 @@
 import cHeader from "@/components/cHeader";
 import { getDetail } from "@/utils/api";
 import { formatTime } from "@/utils";
+import { mapGetters } from "vuex";
 export default {
   components: {
     cHeader
@@ -43,8 +48,10 @@ export default {
       article: null
     };
   },
+  computed: {
+    ...mapGetters(["sortList"])
+  },
   onLoad: function(option) {
-    option.article_id = "5add8d4bab1f0e28e8b278a3";
     if (option.article_id) {
       this.article_id = option.article_id;
     } else {
@@ -60,9 +67,13 @@ export default {
     _initData() {
       getDetail({ article_id: this.article_id }).then(res => {
         let data = res.data;
-        data.meta.created = formatTime(new Date(data.meta.created));
+        data.created = formatTime(new Date(data.meta.created));
         data.lookedNum = data.looked.length;
         data.looked = data.looked.slice(0, 5);
+        data.content = data.content.replace(
+          /\<img/gi,
+          '<img style="max-width:100%;height:auto" '
+        );
         this.article = data;
       });
     }
@@ -88,6 +99,7 @@ export default {
 }
 .subtitle {
   color: #949494;
+  padding: 4px 0;
 }
 .author {
   padding-right: 10px;

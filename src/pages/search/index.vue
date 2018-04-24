@@ -105,6 +105,9 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  height: 100%;
+}
 .placeholder {
   color: #a5a5a5;
   font-size: 14px;
@@ -138,8 +141,10 @@ export default {
   color: #2b2b2b;
 }
 .search-list_wrap {
-  margin-top: 50px;
   position: relative;
+  padding-top: 50px;
+  left: 0;
+  overflow-y: scroll;
   background-color: #fff;
 }
 .search-list {

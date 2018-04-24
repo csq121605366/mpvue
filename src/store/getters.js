@@ -3,6 +3,7 @@ const getters = {
   apiUrl: state => state.app.apiUrl,
   qiniuTicket: state => state.app.qiniuTicket,
   authType: state => state.app.authType,
+  sortList: state => state.app.sortList,
 
   id: state => state.user.id,
   name: state => state.user.name,
