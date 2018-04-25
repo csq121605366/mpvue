@@ -13,16 +13,16 @@
         <!--游客 -->
         <div v-if="role==0">
           <div class="zan-panel">
-            <div @click="updateInfo" class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/roleselect/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
               <div class="zan-cell__ft">完善</div>
             </div>
-            <div @click="completeMsg" class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/roleselect/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的问题</div>
               <div class="zan-cell__ft"></div>
             </div>
-            <div @click="completeMsg" class="zan-cell zan-cell--access">
-              <div class="zan-cell__bd">我关注的医生</div>
+            <div @click="navigate('/pages/roleselect/main')" class="zan-cell zan-cell--access">
+              <div class="zan-cell__bd">我关注的科室</div>
               <div class="zan-cell__ft"></div>
             </div>
           </div>
@@ -31,14 +31,14 @@
         <!--用户 -->
         <div v-if="role==1">
           <div class="zan-panel">
-            <navigator url="/pages/myinfo/main" class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/myinfo/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
               <div class="zan-cell__ft"></div>
-            </navigator>
-            <navigator  url="/pages/qa_list/main" class="zan-cell zan-cell--access">
+            </div>
+            <div @click="navigate('/pages/qa_list/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的问题</div>
               <div class="zan-cell__ft"></div>
-            </navigator>
+            </div>
             <div class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我关注的科室</div>
               <div class="zan-cell__ft"></div>
@@ -49,28 +49,24 @@
         <!-- 医生 -->
         <div v-if="role==2">
           <div class="zan-panel">
-            <navigator v-if="status==2" url="/pages/myinfo/main" class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/myinfo/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
-              <div class="zan-cell__ft"></div>
-            </navigator>
-            <div v-else class="zan-cell zan-cell--access">
-              <div class="zan-cell__bd">我的信息</div>
-              <div class="zan-cell__ft zan-c-red">审核中...</div>
+              <div v-if="status!='1'" class="zan-cell__ft">审核中...</div>
             </div>
-            <div class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/user_list/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的科室</div>
               <div class="zan-cell__ft"></div>
             </div>
           </div>
           <div class="zan-panel">
-            <navigator url="/pages/article_list/main" class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/article_list/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的文章</div>
               <div class="zan-cell__ft"></div>
-            </navigator>
-            <navigator url="/pages/article/main" class="zan-cell zan-cell--access">
+            </div>
+            <div @click="navigate('/pages/article/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">写文章</div>
               <div class="zan-cell__ft"></div>
-            </navigator>
+            </div>
           </div>
           <div class="zan-panel">
             <div class="zan-cell zan-cell--access">
@@ -138,12 +134,18 @@ export default {
         });
       });
     },
-    writeHandler() {
-      wx.showModal({
-        content: "很抱歉,为了提供更好的服务,咨询编辑只能在网页端进行",
-        showCancel: false,
-        confirmColor: "#2bb5f5"
-      });
+    navigate(url) {
+      if (this.role != "1" && this.status == "1") {
+        wx.showToast({
+          title: "帐号审核中...",
+          icon: "none",
+          mask: true
+        });
+      } else {
+        wx.navigateTo({
+          url
+        });
+      }
     }
   }
 };

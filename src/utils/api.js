@@ -135,10 +135,27 @@ export function qaCreate(data) {
   })
 }
 
-
+// 获取问答列表
 export function qaList(data) {
   return wx.requestAsync({
     url: 'app/qa/list',
+    method: 'POST',
+    data
+  })
+}
+
+//获取科室用户列表
+export function userListByDepartment(data) {
+  return wx.requestAsync({
+    url: 'app/user/department',
+    method: "POST",
+    data
+  })
+}
+
+export function userDetail(data) {
+  return wx.requestAsync({
+    url: 'app/user/detail',
     method: 'POST',
     data
   })

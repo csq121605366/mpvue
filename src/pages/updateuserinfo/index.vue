@@ -596,6 +596,7 @@ export default {
       }
     },
     async submit(e) {
+      console.log(this.form);
       let can = this.validate();
       let self = this;
       if (can) {

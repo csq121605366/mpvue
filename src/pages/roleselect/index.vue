@@ -63,18 +63,17 @@ export default {
 </script>
 
 <style scpoed>
-.container {
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
 .role {
+  position: absolute;
   background-color: #fff;
-  padding: 40px 20px;
-  margin: 0 20px;
-  flex: 1 1 auto;
+  left: 0;
+  right: 0;
+  margin: 60px auto 0;
+  padding: 40px 10px;
+  box-sizing: border-box;
+  width: 280px;
+  border-radius: 6px;
+  box-shadow: 0 0 6px #999;
 }
 .zan-panel-title {
   padding-bottom: 10px;

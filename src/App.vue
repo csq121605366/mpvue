@@ -8,7 +8,7 @@ export default {
 @import "./assets/style/iconfont.wxss";
 @import "./assets/style/zanui.wxss";
 page {
-  height: 100%;
+  /* height: 100%; */
   width: 100%;
 }
 .app {
@@ -21,9 +21,9 @@ page {
   justify-content: center;
 }
 .container {
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   position: relative;
-  top: 60px;
+  top: 70px;
   left: 0;
   box-sizing: border-box;
   /* overflow: scroll; */

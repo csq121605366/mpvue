@@ -9,7 +9,7 @@
       </div>
       <div class="qa">
         <div class="link">
-          <div v-if="role=='1'" class="link_item zan-hairline--bottom">
+          <div v-if="role=='1'||role=='0'" class="link_item zan-hairline--bottom">
             <div class="link_item_logo iconfont icon-liuyan"></div>
             <nav @click="navigate('/pages/qa_create/main')" class="link_item_txt">
               <h3 class="link_item_title">快速提问</h3>
@@ -17,9 +17,9 @@
               <div class="zan-arrow"></div>
             </nav>
           </div>
-          <div v-if="role=='1'" class="link_item zan-hairline--bottom">
+          <div v-if="role=='1'||role=='0'" class="link_item zan-hairline--bottom">
             <div class="link_item_logo iconfont icon-tuandui"></div>
-            <nav @click="navigate('/pages/doctor_list/main')" class="link_item_txt">
+            <nav @click="navigate('/pages/user_list/main')" class="link_item_txt">
               <h3 class="link_item_title">查医生</h3>
               <p class="link_item_subtitle">快速了解科室医生</p>
               <div class="zan-arrow"></div>
@@ -35,7 +35,7 @@
           </div>
           <div v-if="role=='2'||role=='3'" class="link_item zan-hairline--bottom">
             <div class="link_item_logo iconfont icon-tuandui"></div>
-            <nav @click="navigate('/pages/qa_create/main')" class="link_item_txt">
+            <nav @click="navigate('/pages/user_list/main')" class="link_item_txt">
               <h3 class="link_item_title">科室成员</h3>
               <p class="link_item_subtitle">科室相关成员</p>
               <div class="zan-arrow"></div>
@@ -64,40 +64,38 @@ export default {
   },
   methods: {
     navigate(url, param) {
-      if (this.role == "0") {
-        wx.showToast({
-          title: "请完善资料",
-          icon: "none",
-          mask: true,
-          success: function() {
-            setTimeout(() => {
-              wx.switchTab({ url: "/pages/my/main" });
-            }, 800);
-          }
-        });
-      } else {
-        wx.navigateTo({
-          url: url
-        });
-      }
+      wx.navigateTo({
+        url: url
+      });
     }
   },
   onShow() {
     //病人进来为提问页面 医生进来为问题列表
-    // if (this.role == "0") {
-    //   wx.showToast({
-    //     title: "请完善资料",
-    //     icon: "none",
-    //     mask: true,
-    //     success: function() {
-    //       setTimeout(() => {
-    //         wx.switchTab({
-    //           url: "/pages/my/main"
-    //         });
-    //       }, 800);
-    //     }
-    //   });
-    // }
+    if (this.role == "0") {
+      wx.showToast({
+        title: "请完善资料",
+        icon: "none",
+        mask: true,
+        success: function() {
+          setTimeout(() => {
+            wx.switchTab({
+              url: "/pages/my/main"
+            });
+          }, 800);
+        }
+      });
+    } else if (this.role != "1" && this.status == "1") {
+      wx.showToast({
+        title: "请等待审核完成",
+        icon: "none",
+        mask: true,
+        success: function() {
+          setTimeout(() => {
+            wx.switchTab({ url: "/pages/index/main" });
+          }, 800);
+        }
+      });
+    }
   }
 };
 </script>

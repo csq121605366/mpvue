@@ -130,11 +130,6 @@ export default {
   props: ["user_id", "department_key", "limit", "sort", "type", "status"],
   data() {
     return {
-      tablist: {
-        current: 0,
-        height: 0,
-        scrollActiveId: ""
-      },
       sublist: {
         list: [
           { title: "日志", id: "sort1", sort: "1", data: [], last_id: "" },
