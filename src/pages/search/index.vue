@@ -33,7 +33,6 @@ export default {
     cHeader
   },
   onLoad(option) {
-    option.type = "hospital";
     if (option.type) {
       if (option.type == "hospital") {
         this.placeholder = "搜索医院";

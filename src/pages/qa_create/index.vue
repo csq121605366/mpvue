@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <c-header fixed title="问答"></c-header>
+    <c-header back fixed title="问答"></c-header>
     <div class="container">
       <div class="qa">
         <div class="zan-panel">
@@ -41,7 +41,7 @@
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">就诊信息</div>
               <div class="form">
-                <div class="treatment_tip zan-c-gray">提问前请上传病例信息，便于医生了解您的病情。上传资料以图片的方式提供，包括住院病例，入院记录、手术记录、出院记录、会诊记录、B超、心电图、CT、核磁共振、医嘱记录等 图片个数：{{form.images.length}} / {{maxImageNum}} (长按删除)</div>
+                <div class="treatment_tip zan-c-gray">提问前请上传病例信息，便于医生了解您的病情，上传资料以图片的方式提供。 图片个数：{{form.images.length}} / {{maxImageNum}} (长按删除)</div>
                 <div class="treatment_img_list">
                   <div @longpress="form.images.splice(index,1)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.images" :key="index" class="treatment_img_item">
                     <image class="treatment_img_image" :src="item.imageURL+'-webp'"></image>
@@ -280,5 +280,6 @@ export default {
 }
 .content {
   width: 100%;
+  height: 130px;
 }
 </style>

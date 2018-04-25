@@ -51,13 +51,13 @@ export function sendCode(data) {
 // 获取主科室列表
 export function mainDepart() {
   return wx.requestAsync({
-    url: "app/maindepartments"
+    url: "app/department/main"
   });
 }
 // 获取次科室列表
 export function viceDepart(_id) {
   return wx.requestAsync({
-    url: "app/vicedepartments?_id=" + _id
+    url: "app/department/vice?_id=" + _id
   });
 }
 
