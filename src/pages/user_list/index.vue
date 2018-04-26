@@ -104,7 +104,7 @@ export default {
     _initData() {
       let department = [];
       this.department.forEach(res => {
-        department.push(res.key.toString());
+        department.push(res.key);
       });
       this.doctor.list = [];
       userListByDepartment({ department }).then(res => {

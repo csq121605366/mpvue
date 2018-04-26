@@ -60,18 +60,15 @@ export default {
   onLoad(option) {
     if (option.user_id) {
       this.user_id = option.user_id;
+      this._initData();
     }
-  },
-  mounted() {
-    this._initData();
   },
   methods: {
     _initData() {
+      this.user_info = "";
       userDetail({ user_id: this.user_id }).then(res => {
         this.user_info = res.data.userinfo;
         this.article = res.data.article;
-        console.log(this.user_info);
-        console.log(this.article);
       });
     }
   }

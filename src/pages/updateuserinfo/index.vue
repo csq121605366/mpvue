@@ -596,7 +596,6 @@ export default {
       }
     },
     async submit(e) {
-      console.log(this.form);
       let can = this.validate();
       let self = this;
       if (can) {
@@ -605,21 +604,28 @@ export default {
           mask: true
         });
         update(this.form).then(res => {
+          if (res.success) {
+            wx.showToast({
+              title: "更新成功",
+              icon: "success",
+              success: function() {
+                wx.switchTab({
+                  url: "/pages/my/main",
+                  success() {
+                    self.$store.dispatch("Login").then(_ => {
+                      self.$store.dispatch("GetInfo");
+                    });
+                  }
+                });
+              }
+            });
+          } else {
+            wx.showToast({
+              title: "上传失败",
+              icon: "none"
+            });
+          }
           wx.hideLoading();
-          wx.showToast({
-            title: "更新成功",
-            icon: "success",
-            success: function() {
-              wx.switchTab({
-                url: "/pages/my/main",
-                success() {
-                  self.$store.dispatch("Login").then(_ => {
-                    self.$store.dispatch("GetInfo");
-                  });
-                }
-              });
-            }
-          });
         });
       }
     }

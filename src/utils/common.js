@@ -20,13 +20,6 @@ const asyncWrap = fn => (options = {}) =>
               store.dispatch("Login").then(res => {
                 store.dispatch("GetInfo");
               });
-              if (res.data.error && res.data.error.indexOf("expired")) {
-                wx.showToast({
-                  title: "开了个小差,已经回来了",
-                  icon: "none",
-                  duration: 2000
-                });
-              }
               reject(res.data);
             } else {
               wx.showToast({

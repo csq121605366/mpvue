@@ -44,13 +44,19 @@
     <c-header fixed title="首页"></c-header>
     <div class="container">
       <!-- 首页顶部搜索和链接 -->
-      <!-- 搜索框 -->
-      <c-search></c-search>
+      <div @click="navigateTo('/pages/search/main')">
+        <!-- 搜索框 -->
+        <c-search></c-search>
+      </div>
       <div class="toptap">
         <div class="toptap-tap__ul">
-          <div class="toptap-tap__li">
+          <div @click="navigateTo('/pages/qa_create/main')" v-if="role=='0'||role=='1'" class="toptap-tap__li">
             <i class="iconfont icon-ziliao"></i>
             <text>快速提问</text>
+          </div>
+          <div @click="navigateTo('/pages/qa_list/main')" v-else class="toptap-tap__li">
+            <i class="iconfont icon-ziliao"></i>
+            <text>问题列表</text>
           </div>
           <div class="toptap-tap__li">
             <i class="iconfont icon-ziliao"></i>
@@ -64,7 +70,7 @@
       </div>
       <!-- 首页顶部搜索和链接-end -->
       <c-article></c-article>
-      <c-tap limit="2"></c-tap>
+      <c-tap></c-tap>
     </div>
   </div>
 </template>
@@ -74,11 +80,15 @@ import cHeader from "@/components/cHeader";
 import cSearch from "@/components/cSearch";
 import cArticle from "@/components/cArticle";
 import cTap from "@/components/cTap";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       userInfo: {}
     };
+  },
+  computed: {
+    ...mapGetters(["role"])
   },
   components: {
     cHeader,
@@ -102,14 +112,26 @@ export default {
       wx.navigateTo({ url });
     },
     getUserInfo() {
-      if (!this.$store.getters.id) {
-        this.$store.dispatch("Login").then(() => {
-          this.$store.dispatch("GetInfo");
+      this.$store.dispatch("Login").then(() => {
+        this.$store.dispatch("GetInfo");
+      });
+    },
+    navigateTo(url) {
+      if (this.role == "0") {
+        wx.showToast({
+          title: "请完善信息后提问",
+          icon: "none",
+          success: function() {
+            wx.navigateTo({
+              url: "/pages/roleselect/main"
+            });
+          }
+        });
+      } else {
+        wx.navigateTo({
+          url: url
         });
       }
-    },
-    clickHandle(msg, ev) {
-      console.log("clickHandle:", msg, ev);
     }
   },
   mounted() {

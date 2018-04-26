@@ -84,9 +84,9 @@ export function hospitalSearch(data) {
   });
 }
 
-export function articleCreate(data) {
+export function articleCreateAndUpdate(data) {
   return wx.requestAsync({
-    url: "app/article/create",
+    url: "app/article/createandupdate",
     method: "POST",
     data
   });
@@ -109,6 +109,7 @@ export function articleList(data) {
     data
   });
 }
+
 //文章获取详情
 export function getDetail(data) {
   return wx.requestAsync({
@@ -118,7 +119,8 @@ export function getDetail(data) {
   });
 }
 
-export function getPaging(data) {
+//首页进入时的文章列表
+export function articlePaging(data) {
   return wx.requestAsync({
     url: 'app/article/paging',
     method: 'POST',
@@ -126,10 +128,20 @@ export function getPaging(data) {
   })
 }
 
+
 // 创建问题或回答
 export function qaCreate(data) {
   return wx.requestAsync({
     url: 'app/qa/create',
+    method: 'POST',
+    data
+  })
+}
+
+//回答问题
+export function qaAnswer(data) {
+  return wx.requestAsync({
+    url: 'app/qa/answer',
     method: 'POST',
     data
   })
@@ -143,6 +155,17 @@ export function qaList(data) {
     data
   })
 }
+
+//问答详情
+export function qaDetail(data) {
+  return wx.requestAsync({
+    url: 'app/qa/detail',
+    method: 'post',
+    data
+  })
+}
+
+
 
 //获取科室用户列表
 export function userListByDepartment(data) {

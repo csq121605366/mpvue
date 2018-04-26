@@ -34,7 +34,7 @@
           <div class="image_info">
             <div class="image_tip zan-c-gray">上传图片 资源个数：{{form.images.length}} / 9 (长按删除)</div>
             <div class="image_img_list">
-              <div @longpress="imgsDel(index)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.images" :key="index" class="image_img_item">
+              <div @longpress="form.images.splice(index,1)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.images" :key="index" class="image_img_item">
                 <image class="image_img_image" :src="item.imageURL+'-webp'"></image>
               </div>
               <div @click="imgsAdd" class="image_img_item">
@@ -66,8 +66,7 @@
         </div>
       </div>
       <div class="btns">
-        <button class="btn zan-btn--primary">预览</button>
-        <button @click="publish" class="btn zan-btn--primary">发布</button>
+        <button @click="publish" :disabled="form.article_id?false:true" class="btn zan-btn--primary">发布</button>
       </div>
     </div>
   </div>
@@ -77,7 +76,7 @@
 import cHeader from "@/components/cHeader";
 import { qiniuTicket } from "@/utils/api.js";
 import * as qiniu from "@/utils/qiniuUploader";
-import { articleCreate, getDetail, articlePublish } from "@/utils/api";
+import { articleCreateAndUpdate, getDetail, articlePublish } from "@/utils/api";
 import WxValidate from "@/utils/validate";
 export default {
   components: {
@@ -130,16 +129,26 @@ export default {
     // 获取七牛ticket
     this.qiniu_init();
   },
+  onLoad(options) {
+    if (options && options.article_id) {
+      this._initData(options.article_id);
+    }
+  },
   onShow() {
     let article_id = this.$mp.page.data.article_id;
     if (article_id) {
-      this.form.article_id = article_id;
-      getDetail({ article_id }).then(res => {
-        Object.assign(this.form, res.data);
-      });
+      this._initData(article_id);
     }
   },
   methods: {
+    _initData(article_id) {
+      this.form.article_id = article_id;
+      getDetail({ article_id }).then(res => {
+        if (res.success) {
+          Object.assign(this.form, res.data);
+        }
+      });
+    },
     qiniu_init() {
       qiniuTicket().then(res => {
         this.qiniuRegion = res.data.qiniuRegion;
@@ -253,24 +262,29 @@ export default {
       });
     },
     addContent() {
-      wx.showLoading({
-        title: "上传中...",
-        mask: true
-      });
-      articleCreate(this.form).then(res => {
-        wx.hideLoading();
-        if (res.data && res.data.article_id) {
-          wx.navigateTo({
-            url: `/pages/article_content/main?article_id=${res.data.article_id}`
-          });
-        } else {
-          wx.showToast({
-            title: `创建失败`,
-            mask: true,
-            icon: "none"
-          });
-        }
-      });
+      let can = this.validate();
+      if (can) {
+        wx.showLoading({
+          title: "上传中...",
+          mask: true
+        });
+        articleCreateAndUpdate(this.form).then(res => {
+          wx.hideLoading();
+          if (res.data && res.data.article_id) {
+            wx.navigateTo({
+              url: `/pages/article_content/main?article_id=${
+                res.data.article_id
+              }`
+            });
+          } else {
+            wx.showToast({
+              title: `创建失败`,
+              mask: true,
+              icon: "none"
+            });
+          }
+        });
+      }
     },
     validate() {
       // 验证字段的规则
@@ -279,10 +293,10 @@ export default {
           required: true,
           minlength: 1,
           maxlength: 25
-        },
-        article_id: {
-          required: true
         }
+        // article_id: {
+        //   required: true
+        // }
       };
 
       // 验证字段的提示信息，若不传则调用默认的信息
@@ -291,10 +305,10 @@ export default {
           required: "请填写文章标题",
           minlength: "文章标题最少一个字",
           maxlength: "文章标题最多25个字"
-        },
-        article_id: {
-          required: "请添加正文内容"
         }
+        // article_id: {
+        //   required: "请添加正文内容"
+        // }
       };
       // 创建实例对象
       this.WxValidate = new WxValidate(rules, messages);
@@ -385,6 +399,7 @@ export default {
 
 .btns {
   margin-top: 20px;
+  margin-bottom: 20px;
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;

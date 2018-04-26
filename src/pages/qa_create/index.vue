@@ -40,7 +40,7 @@
             </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">就诊信息</div>
-              <div class="form">
+              <div class="zan-cell__bd">
                 <div class="treatment_tip zan-c-gray">提问前请上传病例信息，便于医生了解您的病情，上传资料以图片的方式提供。 图片个数：{{form.images.length}} / {{maxImageNum}} (长按删除)</div>
                 <div class="treatment_img_list">
                   <div @longpress="form.images.splice(index,1)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.images" :key="index" class="treatment_img_item">
@@ -101,6 +101,14 @@ export default {
       qiniuTicket: "",
       qiniuDomain: "",
       qiniuRegion: "",
+      oForm: {
+        title: "",
+        department: "",
+        illness_name: "",
+        operation: "0",
+        images: [],
+        content: ""
+      },
       form: {
         title: "",
         department: "",
@@ -116,41 +124,12 @@ export default {
     ...mapGetters(["role", "status", "department"])
   },
   onShow() {
-    //病人进来为提问页面 医生进来为问题列表
-    if (this.role == "1") {
-      // 获取七牛ticket
-      qiniuTicket().then(res => {
-        this.qiniuRegion = res.data.qiniuRegion;
-        this.qiniuTicket = res.data.qiniuTicket;
-        this.qiniuDomain = res.data.qiniuDomain;
-      });
-    } else if (this.role.indexOf(["2", "3"]) > -1 && this.status != "2") {
-      wx.showToast({
-        title: "未激活",
-        icon: "none",
-        mask: true,
-        success: function() {
-          setTimeout(() => {
-            wx.switchTab({
-              url: "/pages/index/main"
-            });
-          }, 800);
-        }
-      });
-    } else {
-      wx.showToast({
-        title: "请完善资料",
-        icon: "none",
-        mask: true,
-        success: function() {
-          setTimeout(() => {
-            wx.switchTab({
-              url: "/pages/my/main"
-            });
-          }, 800);
-        }
-      });
-    }
+    // 获取七牛ticket
+    qiniuTicket().then(res => {
+      this.qiniuRegion = res.data.qiniuRegion;
+      this.qiniuTicket = res.data.qiniuTicket;
+      this.qiniuDomain = res.data.qiniuDomain;
+    });
   },
   methods: {
     async uploadImg(filePath, cb) {
@@ -192,7 +171,6 @@ export default {
             var tempFilePaths = res.tempFilePaths;
             tempFilePaths.forEach(src => {
               self.uploadImg(src, res => {
-                console.log(res);
                 // 返回bucket文件夹名 fsize文件大小 hash值 imageURL图片地址 key文件名
                 self.form.images.push(res);
               });
@@ -223,16 +201,19 @@ export default {
         mask: true
       });
       qaCreate(this.form).then(res => {
-        wx.hideLoading();
-        wx.showToast({
-          title: "提问成功",
-          icon: "success",
-          success: function() {
-            wx.switchTab({
-              url: "/pages/index/main"
-            });
-          }
-        });
+        if (res.success) {
+          this.form = Object.assign({}, this.oForm);
+          wx.hideLoading();
+          wx.showToast({
+            title: "提问成功",
+            icon: "success",
+            success: function() {
+              wx.switchTab({
+                url: "/pages/index/main"
+              });
+            }
+          });
+        }
       });
     }
   }

@@ -42,7 +42,7 @@ export default {
   },
   data() {
     return {
-      placeholder: "搜索医生 / 科室 / 医院 / 症状 / 疾病",
+      placeholder: "搜索医生 / 科室 / 问题",
       type: "",
       list_height: 0,
       list: [],

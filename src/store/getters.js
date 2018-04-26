@@ -4,6 +4,8 @@ const getters = {
   qiniuTicket: state => state.app.qiniuTicket,
   authType: state => state.app.authType,
   sortList: state => state.app.sortList,
+  operationList: state => state.app.operationList,
+  articleStatusList: state => state.app.articleStatusList,
 
   id: state => state.user.id,
   name: state => state.user.name,

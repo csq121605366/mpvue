@@ -13,8 +13,8 @@
             <span class="author">{{article.author}}</span>{{article.created}}</p>
         </div>
         <div class="cnt">
-          <rich-text :nodes="article.content"></rich-text>
-          <ul v-if="article.videos.length" class="meida">
+          <rich-text class="richText" :nodes="article.content"></rich-text>
+          <ul v-if="article.videos&&article.videos.length" class="meida">
             <li v-for="(item,index) in article.videos" :key="index">
               <video :src="item.videoURL" controls show-fullscreen-btn></video>
             </li>
@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       article_id: "",
-      article: null
+      article: ""
     };
   },
   computed: {
@@ -54,17 +54,16 @@ export default {
   onLoad: function(option) {
     if (option.article_id) {
       this.article_id = option.article_id;
+      this._initData();
     } else {
       wx.redirectTo({
         url: "/pages/index/main"
       });
     }
   },
-  mounted() {
-    this._initData();
-  },
   methods: {
     _initData() {
+      this.article = "";
       getDetail({ article_id: this.article_id }).then(res => {
         let data = res.data;
         data.created = formatTime(new Date(data.meta.created));
@@ -90,7 +89,7 @@ export default {
   padding: 20px 10px;
 }
 .cnt {
-  padding-bottom: 50px;
+  padding-bottom: 60px;
 }
 .title {
   font-size: 20px;
@@ -130,5 +129,8 @@ export default {
   height: 30px;
   margin-right: 4px;
   border-radius: 50%;
+}
+.richText {
+  word-wrap: break-word;
 }
 </style>

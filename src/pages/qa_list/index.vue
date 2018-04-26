@@ -7,19 +7,19 @@
           <div class="search">
             <i class="search_icon iconfont icon-sousuo" type="search"></i>
             <input @input="search($event)" v-model="searchTxt" class="search_box" placeholder-class="placeholder" type="text" :placeholder="placeholder">
-            <i v-if="searchTxt" @click="searchTxt=''" class="search_icon iconfont icon-guanbi"></i>
+            <i v-if="searchTxt" @click="searchClose" class="search_icon iconfont icon-guanbi"></i>
           </div>
         </div>
       </div>
       <div class="bd">
-        <ul v-if="qalist.length" class="qalist">
-          <li v-for="(item,index) in qalist" @click="navigate(item._id)" class="qalist_item zan-hairline--bottom" :key="index">
+        <ul v-if="qalist&&qalist.length" class="qalist">
+          <li v-for="(item,index) in qalist" @click="navigateTo(item._id)" class="qalist_item zan-hairline--bottom" :key="index">
             <h3 class="qalist_title zan-ellipsis">问：{{item.title}}</h3>
             <p class="qalist_precontent zan-ellipsis">
               {{item.content}}
             </p>
             <div class="qalist_info">
-              <i v-if="item.qa_id.length" class="qalist_mark iconfont icon-biaoji"> 已回复</i>健康无忧 {{item.created}}</div>
+              <i v-if="item.answer.length" class="qalist_mark iconfont icon-biaoji"> 已回复</i>健康无忧 {{item.created}}</div>
           </li>
         </ul>
         <div class="qalist_tip" v-else>
@@ -49,43 +49,41 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["id"])
+    searchTxt() {},
+    ...mapGetters(["id", "role"])
   },
   methods: {
-    _initData() {
-      qaList({ user_id: this.id }).then(res => {
-        if (res.data) {
+    navigateTo(_id) {
+      wx.navigateTo({
+        url: "/pages/qa_detail/main?qa_id=" + _id
+      });
+    },
+    getData(param) {
+      let data = Object.assign({}, param);
+      wx.showLoading({ mask: true });
+      qaList(data).then(res => {
+        if (res.data && res.data.length) {
           res.data.forEach((element, index) => {
             res.data[index].created = formatTime(
               new Date(element.meta.created)
             );
           });
           this.last_id = res.data[res.data.length - 1]._id;
-          this.qalist = res.data;
         }
+        this.qalist = res.data;
+        wx.hideLoading();
       });
-    },
-    navigate(_id) {
-      wx.navigateTo({
-        url:''
-      })
     },
     search: debounce(function(e) {
       if (e.type == "input") {
         this.key = e.target.value;
-        wx.showLoading({ mask: true });
-        qaList({ user_id: this.id, key: this.key }).then(res => {
-          res.data.forEach((element, index) => {
-            res.data[index].created = formatTime(
-              new Date(element.meta.created)
-            );
-          });
-          this.last_id = res.data[res.data.length - 1]._id;
-          this.qalist = res.data;
-          wx.hideLoading();
-        });
+        this.getData({ key: this.key });
       }
-    }, 600)
+    }, 600),
+    searchClose() {
+      this.searchTxt = "";
+      this.getData();
+    }
   },
   onReachBottom(e) {
     if (this.last_id) {
@@ -113,8 +111,13 @@ export default {
       });
     }
   },
-  onShow() {
-    this._initData();
+  onLoad(options) {
+    //type=='my'表示我的问题和回答 type=='all'表示相关科室的问答 如果传user_id则只查本人问题
+    if (options && options.type == "my") {
+      this.getData({ user_id: this.id });
+    } else {
+      this.getData();
+    }
   }
 };
 </script>

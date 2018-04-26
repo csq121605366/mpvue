@@ -3,7 +3,7 @@
     <c-header back fixed title="文章列表"></c-header>
     <div class="container">
       <div class="list">
-        <c-tap :user_id="id"></c-tap>
+        <c-tap :user_id="id" :status="status" :articleList="true"></c-tap>
       </div>
     </div>
   </div>
@@ -19,12 +19,14 @@ export default {
     cHeader,
     cTap
   },
-  data() {},
+  data() {
+    return {
+      status: []
+    };
+  },
   computed: {
     ...mapGetters(["id", "department"])
-  },
-  mounted() {},
-  methods: {}
+  }
 };
 </script>
 

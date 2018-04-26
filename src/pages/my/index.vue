@@ -35,11 +35,11 @@
               <div class="zan-cell__bd">我的信息</div>
               <div class="zan-cell__ft"></div>
             </div>
-            <div @click="navigate('/pages/qa_list/main')" class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/qa_list/main?type=my')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的问题</div>
               <div class="zan-cell__ft"></div>
             </div>
-            <div class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/user_list/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我关注的科室</div>
               <div class="zan-cell__ft"></div>
             </div>
@@ -51,7 +51,7 @@
           <div class="zan-panel">
             <div @click="navigate('/pages/myinfo/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
-              <div v-if="status!='1'" class="zan-cell__ft">审核中...</div>
+              <div v-if="status=='1'" class="zan-cell__ft">审核中...</div>
             </div>
             <div @click="navigate('/pages/user_list/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的科室</div>
@@ -69,7 +69,7 @@
             </div>
           </div>
           <div class="zan-panel">
-            <div class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/qa_list/main?type=my')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的回答</div>
               <div class="zan-cell__ft"></div>
             </div>
@@ -116,7 +116,7 @@ export default {
   computed: {
     ...mapGetters(["avatar", "avatarUrl", "name", "role", "status"])
   },
-  mounted() {
+  onShow() {
     this.$store.dispatch("GetInfo");
   },
   methods: {
@@ -135,9 +135,20 @@ export default {
       });
     },
     navigate(url) {
-      if (this.role != "1" && this.status == "1") {
+      if (this.role == "0") {
         wx.showToast({
-          title: "帐号审核中...",
+          title: "请完善信息",
+          icon: "none",
+          mask: true,
+          success: function() {
+            wx.navigateTo({
+              url
+            });
+          }
+        });
+      } else if ((this.role == "2" || this.role == "3") && this.status != "2") {
+        wx.showToast({
+          title: "正在审核中...",
           icon: "none",
           mask: true
         });
