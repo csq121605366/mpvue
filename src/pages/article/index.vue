@@ -93,7 +93,7 @@ export default {
       picker: {
         sort: 0,
         sortlist: [
-          { key: "1", value: "日志" },
+          { key: "1", value: "日志记录" },
           { key: "2", value: "手术记录" },
           { key: "3", value: "科普文章" }
         ],
@@ -114,7 +114,7 @@ export default {
       },
       form: {
         article_id: "",
-        sort: "1", //文章分类 1日志 2手术记录 3科普文章
+        sort: "1", //文章分类 1日志记录 2手术记录 3科普文章
         title: "", //标题
         illness_name: "", //疾病名称
         illness_time: "术后一周", //手术时间进程

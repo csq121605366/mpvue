@@ -144,7 +144,7 @@ export default {
     return {
       sublist: {
         list: [
-          { title: "日志", id: "sort1", sort: "1", data: [], last_id: "" },
+          { title: "日志记录", id: "sort1", sort: "1", data: [], last_id: "" },
           { title: "手术记录", id: "sort2", sort: "2", data: [], last_id: "" },
           { title: "科普文章", id: "sort3", sort: "3", data: [], last_id: "" }
         ],
@@ -163,6 +163,8 @@ export default {
     ...ZanTab.methods,
     async _initData(fn) {
       await this.getData("1");
+      this.getData("2");
+      this.getData("3");
     },
     refresh() {
       this._initData();
@@ -180,6 +182,7 @@ export default {
       let last_id = this.sublist.list[num - 1].last_id;
       if (last_id) {
         this.func()({
+          user_id: this.user_id,
           article_id: last_id,
           limit: this.limit,
           status: this.status,
@@ -239,10 +242,10 @@ export default {
     menuChange(e) {
       const { componentId, selectedId } = e;
       this[componentId].selectedId = selectedId;
-      let num = selectedId.match(/\d/)[0];
-      if (!this.sublist.list[num - 1].data.length) {
-        this.getData(num + "");
-      }
+      // let num = selectedId.match(/\d/)[0];
+      // if (!this.sublist.list[num - 1].data.length) {
+      //   this.getData(num + "");
+      // }
     }
   }
 };

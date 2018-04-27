@@ -27,13 +27,12 @@ export default {
   config: {
     // 页面前带有 ^ 符号的，会被编译成首页，其他页面可以选填，我们会自动把 webpack entry 里面的入口页面加进去
     pages: [
-      "pages/index/main", //首页
-      "^pages/qa/main", //问诊
+      "^pages/index/main", //首页
+      "pages/qa/main", //问诊
       "pages/my/main", //我的
       "pages/qa_create/main", //快速提问
       "pages/qa_list/main", //我的问题列表
       "pages/myinfo/main", //我的信息展示
-      "pages/mydepartment/main", //我的科室
       "pages/roleselect/main", //角色选择
       "pages/updateuserinfo/main", //更新个人信息
       "pages/addfriend/main", //添加潜在客户

@@ -41,8 +41,8 @@
           </div>
         </div>
         <!-- 已经回复内容 -->
-        <div v-if="qa.qa_id&&qa.qa_id.length" v-for="(item,index) in qa.qa_id" :key="index">
-          <view class="zan-panel-title treatment_title">{{item.user_id.title||'经理人'}}-{{item.user_id.name}}：</view>
+        <div v-if="qa.answer&&qa.answer.length" v-for="(item,index) in qa.answer" :key="index">
+          <view class="zan-panel-title treatment_title">{{item.title||'经理人'}}-{{item.name}}：</view>
           <div class="zan-cell zan-field">
             <div class="zan-cell__bd">
               <div class="qa_content">{{item.content}}</div>
@@ -128,7 +128,7 @@ export default {
   methods: {
     _initData() {
       this.form.content = "";
-      this.images = [];
+      this.form.images = [];
       qaDetail({ qa_id: this.qa_id }).then(res => {
         if (res.success) {
           this.qa = res.data;
