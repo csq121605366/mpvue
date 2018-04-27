@@ -6,7 +6,7 @@
         <div class="search_wrap">
           <div class="search">
             <i class="search_icon iconfont icon-sousuo" type="search"></i>
-            <input @input="search($event)" v-model="searchTxt" class="search_box" placeholder-class="placeholder" type="text" :placeholder="placeholder">
+            <input @input="search($event)" v-model="searchTxt" class="search_box" placeholder-class="placeholder" type="text" placeholder="搜索问题标题 / 疾病名称 / 相关内容">
             <i v-if="searchTxt" @click="searchClose" class="search_icon iconfont icon-guanbi"></i>
           </div>
         </div>
@@ -19,12 +19,13 @@
               {{item.content}}
             </p>
             <div class="qalist_info">
-              <i v-if="item.answer.length" class="qalist_mark iconfont icon-biaoji"> 已回复</i>健康无忧 {{item.created}}</div>
+              <i v-if="item.answer_count" class="qalist_mark iconfont icon-biaoji"> 已回复</i>健康无忧 {{item.created}}</div>
           </li>
         </ul>
         <div class="qalist_tip" v-else>
           <i class="qalist_tip_icon iconfont icon-pinglun"></i>
-          <p>还没有提问</p>
+          <p v-if="role=='1'">还没有提问</p>
+          <p v-else>还没有回答</p>
         </div>
       </div>
     </div>
@@ -34,7 +35,7 @@
 <script>
 import cHeader from "@/components/cHeader";
 import { mapGetters } from "vuex";
-import { qaList } from "@/utils/api";
+import { qaSearch } from "@/utils/api";
 import { formatTime, debounce } from "@/utils";
 export default {
   components: {
@@ -49,7 +50,6 @@ export default {
     };
   },
   computed: {
-    searchTxt() {},
     ...mapGetters(["id", "role"])
   },
   methods: {
@@ -58,26 +58,42 @@ export default {
         url: "/pages/qa_detail/main?qa_id=" + _id
       });
     },
-    getData(param) {
-      let data = Object.assign({}, param);
-      wx.showLoading({ mask: true });
-      qaList(data).then(res => {
+    getData(param, flag = false) {
+      let data;
+      if (this.type) {
+        data = Object.assign({ user_id: this.id }, param);
+      } else {
+        data = Object.assign({}, param);
+      }
+      qaSearch(data).then(res => {
         if (res.data && res.data.length) {
           res.data.forEach((element, index) => {
             res.data[index].created = formatTime(
               new Date(element.meta.created)
             );
+            if (flag) {
+              this.qalist.push(element);
+            }
           });
+          if (!flag) {
+            this.qalist = res.data;
+          }
           this.last_id = res.data[res.data.length - 1]._id;
+        } else {
+          this.last_id = "";
+          if (!flag) {
+            this.qalist = [];
+          }
         }
-        this.qalist = res.data;
-        wx.hideLoading();
       });
     },
     search: debounce(function(e) {
       if (e.type == "input") {
-        this.key = e.target.value;
-        this.getData({ key: this.key });
+        if (this.searchTxt) {
+          this.getData({ key: this.searchTxt });
+        } else {
+          this.getData();
+        }
       }
     }, 600),
     searchClose() {
@@ -87,46 +103,20 @@ export default {
   },
   onReachBottom(e) {
     if (this.last_id) {
-      qaList({ user_id: this.id, key: this.key, last_id: this.last_id }).then(
-        res => {
-          if (res.data.length) {
-            res.data.forEach((element, index) => {
-              element.created = formatTime(new Date(element.meta.created));
-              this.qalist.push(element);
-            });
-            this.last_id = res.data[res.data.length - 1]._id;
-          } else {
-            this.last_id = "";
-            wx.showToast({
-              title: "我也是有底线的",
-              icon: "none"
-            });
-          }
-        }
-      );
-    } else {
-      wx.showToast({
-        title: "我也是有底线的",
-        icon: "none"
-      });
+      this.getData({ last_id: this.last_id }, true);
     }
   },
   onLoad(options) {
-    //type=='my'表示我的问题和回答 type=='all'表示相关科室的问答 如果传user_id则只查本人问题
+    //type=='my'表示我的问题和回答 type=='all'表示相关科室的问答 如果传user_id则只查本人问
     if (options && options.type == "my") {
-      this.getData({ user_id: this.id });
-    } else {
-      this.getData();
+      this.type = options.type;
     }
+    this.getData();
   }
 };
 </script>
 
 <style scoped>
-.placeholder {
-  color: #a5a5a5;
-  font-size: 14px;
-}
 .search_wrap {
   position: fixed;
   z-index: 10;
@@ -151,9 +141,8 @@ export default {
 }
 .search_box {
   flex: 1 1 auto;
-  padding-left: 10px;
-  font-size: 16px;
-  color: #2b2b2b;
+  font-size: 13px;
+  color: #a5a5a5;
 }
 .bd {
   position: relative;

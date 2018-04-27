@@ -6,13 +6,13 @@
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">文章类型</div>
           <picker class="article_sort" range-key="value" :range="picker.sortlist" @change="sortChange($event)" :value="picker.sort">
-            <input type="text" :value="picker.sortlist[picker.sort]?picker.sortlist[picker.sort].value:''" placeholder="点击选择" disabled class="zan-field__input zan-cell__bd" />
+            <input type="text" :value="picker.sortlist[form.sort-1]?picker.sortlist[form.sort-1].value:''" placeholder="点击选择" disabled class="zan-field__input zan-cell__bd" />
           </picker>
         </div>
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">展示状态</div>
           <picker class="article_sort" range-key="value" :range="picker.typelist" @change="typeChange($event)" :value="picker.type">
-            <input type="text" :value="picker.typelist[picker.type]?picker.typelist[picker.type].value:''" placeholder="点击选择" disabled class="zan-field__input zan-cell__bd" />
+            <input type="text" :value="picker.typelist[form.type-1]?picker.typelist[form.type-1].value:''" placeholder="点击选择" disabled class="zan-field__input zan-cell__bd" />
           </picker>
         </div>
         <div class="zan-cell zan-field">
@@ -26,7 +26,7 @@
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">手术进程</div>
           <picker class="article_sort" :range="picker.timelist" @change="timeChange($event)" :value="picker.time">
-            <input type="text" :value="picker.timelist[picker.time]?picker.timelist[picker.time]:''" placeholder="点击选择" disabled class="zan-field__input zan-cell__bd" />
+            <input type="text" :value="form.illness_time" placeholder="点击选择" disabled class="zan-field__input zan-cell__bd" />
           </picker>
         </div>
         <div class="zan-cell zan-field">
@@ -146,6 +146,7 @@ export default {
       getDetail({ article_id }).then(res => {
         if (res.success) {
           Object.assign(this.form, res.data);
+          console.log(this.form);
         }
       });
     },
@@ -395,6 +396,8 @@ export default {
 
 .content-prev {
   flex: 1;
+  word-break: break-all;
+  max-width: 175px;
 }
 
 .btns {

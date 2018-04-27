@@ -148,9 +148,9 @@ export function qaAnswer(data) {
 }
 
 // 获取问答列表
-export function qaList(data) {
+export function qaSearch(data) {
   return wx.requestAsync({
-    url: 'app/qa/list',
+    url: 'app/qa/search',
     method: 'POST',
     data
   })
@@ -175,10 +175,19 @@ export function userListByDepartment(data) {
     data
   })
 }
-
+//用户详情
 export function userDetail(data) {
   return wx.requestAsync({
     url: 'app/user/detail',
+    method: 'POST',
+    data
+  })
+}
+
+// 混合搜索
+export function search(data) {
+  return wx.requestAsync({
+    url: 'app/search',
     method: 'POST',
     data
   })

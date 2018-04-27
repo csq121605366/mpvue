@@ -37,6 +37,33 @@
   width: 100px;
   display: inline-block;
 }
+.placeholder {
+  color: #a5a5a5;
+  font-size: 14px;
+}
+.search_wrap {
+  background-color: #2bb5f5;
+  padding: 10px 20px 10px;
+}
+.search {
+  position: relative;
+  height: 35px;
+  background-color: #fff;
+  border-radius: 35px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+.search_icon {
+  padding: 0 10px;
+  color: #2bb5f5;
+}
+.search_box {
+  flex: 1 1 auto;
+  font-size: 13px;
+  color: #a5a5a5;
+}
 </style>
 
 <template>
@@ -46,31 +73,14 @@
       <!-- 首页顶部搜索和链接 -->
       <div @click="navigateTo('/pages/search/main')">
         <!-- 搜索框 -->
-        <c-search></c-search>
-      </div>
-      <div class="toptap">
-        <div class="toptap-tap__ul">
-          <div @click="navigateTo('/pages/qa_create/main')" v-if="role=='0'||role=='1'" class="toptap-tap__li">
-            <i class="iconfont icon-ziliao"></i>
-            <text>快速提问</text>
-          </div>
-          <div @click="navigateTo('/pages/qa_list/main')" v-else class="toptap-tap__li">
-            <i class="iconfont icon-ziliao"></i>
-            <text>问题列表</text>
-          </div>
-          <div class="toptap-tap__li">
-            <i class="iconfont icon-ziliao"></i>
-            <text>找医生</text>
-          </div>
-          <div class="toptap-tap__li">
-            <i class="iconfont icon-ziliao"></i>
-            <text>医生讲堂</text>
+        <div class="search_wrap">
+          <div class="search">
+            <i class="search_icon iconfont icon-sousuo" type="search"></i>
+            <input disabled class="search_box" placeholder-class="placeholder" type="text" placeholder="搜索医生 / 科室 / 问题 / 资讯">
           </div>
         </div>
       </div>
-      <!-- 首页顶部搜索和链接-end -->
-      <c-article></c-article>
-      <c-tap></c-tap>
+      <c-tap :articleList="true"></c-tap>
     </div>
   </div>
 </template>
@@ -135,7 +145,9 @@ export default {
     }
   },
   mounted() {
-    this.getUserInfo();
+    if (!this.role || this.role == "0") {
+      this.getUserInfo();
+    }
   },
   created() {
     // 调用应用实例的方法获取全局数据

@@ -2,7 +2,6 @@
 <style scoped>
 .tablist {
   position: relative;
-  margin-top: 4px;
   margin-bottom: 10px;
 }
 
@@ -82,12 +81,41 @@
   padding: 10px 0;
   font-size: 16px;
 }
+.toptap {
+  color: #fff;
+  background-color: #2bb5f5;
+}
+
+.toptap-tap__ul {
+  display: flex;
+  padding: 10px 0;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+}
+.toptap-tap__li {
+  text-align: center;
+  flex: 1 1 auto;
+  font-size: 12px;
+}
+.toptap-tap__li.active {
+  color: #999;
+}
+.toptap-tap__li .iconfont {
+  font-size: 20px;
+}
 </style>
 
 
 <template>
   <div class="tablist">
-    <ZanTab v-bind="sublist" :componentId="'sublist'" :handleZanTabChange="menuChange"></ZanTab>
+    <div class="toptap">
+      <div class="toptap-tap__ul">
+        <div v-for="(item,index) in sublist.list" :class="item.id == sublist.selectedId?'active':''" @click="menuChange(item)" class="toptap-tap__li" :key="index">
+          <i class="iconfont" :class="item.icon"></i>
+          <text>{{item.title}}</text>
+        </div>
+      </div>
+    </div>
     <div class="tablist_list">
       <div v-for="(item,index) in sublist.list" v-if="item.id == sublist.selectedId" :key="index" class="tablist_list_item tablist_article">
         <div v-if="item.data.length" v-for="(x,i) in item.data" :key="x" @click="navigate(x)" class="tablist_article_item zan-hairline--bottom">
@@ -95,7 +123,7 @@
             <h3 class="tablist_article_title zan-ellipsis">{{x.title}}</h3>
             <div class="tablist_article_text zan-ellipsis--l2">{{x.pre_content}}</div>
             <div v-if="x.user_id" class="tablist_article_author">
-              <img class="tablist_article_avatar" :src="x.user_id.avatar.imageURL" />
+              <img class="tablist_article_avatar" :src="x.user_id.avatar?x.user_id.avatar.imageURL:x.user_id.avatarUrl" />
               <span>{{x.user_id.name}}</span>
               <view class="tablist_article_tag">{{articleStatusList[x.status]}}</view>
               <view class="tablist_article_tag">{{x.illness_name}}</view>
@@ -144,9 +172,30 @@ export default {
     return {
       sublist: {
         list: [
-          { title: "日志记录", id: "sort1", sort: "1", data: [], last_id: "" },
-          { title: "手术记录", id: "sort2", sort: "2", data: [], last_id: "" },
-          { title: "科普文章", id: "sort3", sort: "3", data: [], last_id: "" }
+          {
+            title: "日志记录",
+            icon: "icon-ziliao",
+            id: "sort1",
+            sort: "1",
+            data: [],
+            last_id: ""
+          },
+          {
+            title: "手术记录",
+            icon: "icon-ziliao",
+            id: "sort2",
+            sort: "2",
+            data: [],
+            last_id: ""
+          },
+          {
+            title: "科普文章",
+            icon: "icon-ziliao",
+            id: "sort3",
+            sort: "3",
+            data: [],
+            last_id: ""
+          }
         ],
         scroll: false,
         selectedId: "sort1"
@@ -154,7 +203,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["articleStatusList"])
+    ...mapGetters(["articleStatusList", "role"])
   },
   onLoad() {
     this._initData();
@@ -170,7 +219,7 @@ export default {
       this._initData();
     },
     func() {
-      if (this.articleList) {
+      if (this.articleList && this.role != "0") {
         return articleList;
       } else {
         return articlePaging;
@@ -195,16 +244,7 @@ export default {
             this.sublist.list[num - 1].last_id = res.data[0]._id;
           } else {
             this.sublist.list[num - 1].last_id = "";
-            wx.showToast({
-              title: "我也是有底线的",
-              icon: "none"
-            });
           }
-        });
-      } else {
-        wx.showToast({
-          title: "我也是有底线的",
-          icon: "none"
         });
       }
     },
@@ -216,12 +256,19 @@ export default {
         limit: this.limit,
         status: this.status,
         sort
-      }).then(res => {
-        if (res.data.length) {
-          this.sublist.list[sort - 1].data = res.data;
-          this.sublist.list[sort - 1].last_id = res.data[0]._id;
-        }
-      });
+      })
+        .then(res => {
+          if (res.data.length) {
+            this.sublist.list[sort - 1].data = res.data;
+            this.sublist.list[sort - 1].last_id = res.data[0]._id;
+          }
+        })
+        .catch(res => {
+          //如果用户重置了系统这里进行首页页面更新
+          setTimeout(() => {
+            this.refresh();
+          }, 800);
+        });
     },
     navigate(item) {
       if (item.status == "2") {
@@ -240,8 +287,9 @@ export default {
       }
     },
     menuChange(e) {
-      const { componentId, selectedId } = e;
-      this[componentId].selectedId = selectedId;
+      this.sublist.selectedId = e.id;
+      // const { componentId, selectedId } = e;
+      // this[componentId].selectedId = selectedId;
       // let num = selectedId.match(/\d/)[0];
       // if (!this.sublist.list[num - 1].data.length) {
       //   this.getData(num + "");

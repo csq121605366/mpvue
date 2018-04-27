@@ -5,7 +5,7 @@
       <!-- 首页顶部搜索和链接 -->
       <div class="qa">
         <div class="link">
-          <div v-if="role=='1'||role=='0'||role=='2'" class="link_item zan-hairline--bottom">
+          <div v-if="role=='1'||role=='0'" class="link_item zan-hairline--bottom">
             <div class="link_item_logo iconfont icon-liuyan"></div>
             <nav @click="navigate('/pages/qa_create/main')" class="link_item_txt">
               <h3 class="link_item_title">快速提问</h3>
@@ -40,7 +40,7 @@
         </div>
         <div class="qa_dynamic">
           <div class="menu">
-            <ZanTab v-bind="qa" :componentId="'doctor'" :handleZanTabChange="menuChange"></ZanTab>
+            
           </div>
           <ul v-if="qa.list.length" class="qalist">
             <li v-if="item.id == qa.selectedId" v-for="(item,index) in qa.list" @click="navigateTo(item._id)" class="qalist_item zan-hairline--bottom" :key="index">

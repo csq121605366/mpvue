@@ -2,7 +2,7 @@
     <div class="search__wrap">
         <div class="search">
             <i class="search__icon iconfont icon-sousuo" type="search"></i>
-            <input disabled class="search__box" placeholder-class="placeholder" type="text" placeholder="搜索医生 / 科室 / 问题">
+            <input disabled class="search__box" placeholder-class="placeholder" type="text" placeholder="搜索医生 / 科室 / 问题 / 资讯">
         </div>
     </div>
 </template>
