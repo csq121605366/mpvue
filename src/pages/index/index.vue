@@ -76,11 +76,11 @@
         <div class="search_wrap">
           <div class="search">
             <i class="search_icon iconfont icon-sousuo" type="search"></i>
-            <input disabled class="search_box" placeholder-class="placeholder" type="text" placeholder="搜索医生 / 科室 / 问题 / 资讯">
+            <input disabled class="search_box" placeholder-class="placeholder" type="text" placeholder="搜索问题 / 资讯 / 医生">
           </div>
         </div>
       </div>
-      <c-tap :articleList="true"></c-tap>
+      <c-tap></c-tap>
     </div>
   </div>
 </template>
@@ -98,7 +98,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["role"])
+    ...mapGetters(["role", "status"])
   },
   components: {
     cHeader,
@@ -117,10 +117,6 @@ export default {
     this.$children[this.$children.length - 1].loadMore();
   },
   methods: {
-    bindViewTap() {
-      const url = "../logs/main";
-      wx.navigateTo({ url });
-    },
     getUserInfo() {
       this.$store.dispatch("Login").then(() => {
         this.$store.dispatch("GetInfo");
@@ -129,18 +125,21 @@ export default {
     navigateTo(url) {
       if (this.role == "0") {
         wx.showToast({
-          title: "请完善信息后提问",
+          title: "请先完善个人信息",
           icon: "none",
           success: function() {
-            wx.navigateTo({
-              url: "/pages/roleselect/main"
-            });
+            setTimeout(() => {
+              wx.navigateTo({ url: "pages/role_select/main" });
+            }, 800);
           }
         });
-      } else {
-        wx.navigateTo({
-          url: url
+      } else if ((this.role == "2"||this.role == "3") && this.status == "1") {
+        wx.showToast({
+          title: "请等待审核结束",
+          icon: "none"
         });
+      } else {
+        wx.navigateTo({ url });
       }
     }
   },
@@ -151,6 +150,7 @@ export default {
   },
   created() {
     // 调用应用实例的方法获取全局数据
+    this.$store.dispatch("refreshTimes");
   }
 };
 </script>

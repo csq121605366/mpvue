@@ -13,7 +13,7 @@
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">姓名</div>
-            <input type="text" v-model="form.name" placeholder="请输入姓名" class="zan-field__input zan-cell__bd" />
+            <input type="text" @input="form.name = $event.target.value" placeholder="请输入姓名" class="zan-field__input zan-cell__bd" />
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">性别</div>
@@ -23,11 +23,11 @@
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">手机号</div>
-            <input type="text" v-model="form.phone" placeholder="请输入手机号" class="zan-field__input zan-cell__bd" />
+            <input type="text" @input="form.phone = $event.target.value" placeholder="请输入手机号" class="zan-field__input zan-cell__bd" />
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">验证码</div>
-            <input type="text" v-model="form.code" placeholder="请输入短信验证码" class="zan-field__input zan-cell__bd" />
+            <input type="text"  @input="form.code = $event.target.value" placeholder="请输入短信验证码" class="zan-field__input zan-cell__bd" />
             <div class="zan-cell__ft">
               <button @click="sendCode" :disabled="sendCodeing" class="zan-btn zan-btn--mini zan-btn--primary">获取验证码</button>
             </div>
@@ -215,7 +215,8 @@ import {
   viceDepart,
   qiniuTicket,
   titleList,
-  update
+  update,
+  updateLocaltion
 } from "@/utils/api.js";
 import { authType, guid } from "@/utils";
 import * as qiniu from "@/utils/qiniuUploader";
@@ -265,6 +266,7 @@ export default {
       qiniuDomain: "",
       qiniuRegion: "",
       treamentShow: true,
+      form_phone: "",
       form: {
         role: "",
         avatar: {},
@@ -337,6 +339,14 @@ export default {
       this.qiniuRegion = res.data.qiniuRegion;
       this.qiniuTicket = res.data.qiniuTicket;
       this.qiniuDomain = res.data.qiniuDomain;
+    });
+    let self = this;
+    //获取用户坐标
+    wx.getLocation({
+      type: "wgs84",
+      success: function(res) {
+        updateLocaltion({ localtion: res });
+      }
     });
   },
   methods: {
@@ -448,6 +458,10 @@ export default {
         this.sendCodeing = false;
       }, 6 * 1000);
       this.sendCodeing = true;
+    },
+    InputChange(param, e) {
+      this.form[param] = e.target.value;
+      console.log(e.target.value)
     },
     sendCode(e) {
       if (authType.phone.reg.test(this.form.phone)) {
@@ -641,7 +655,7 @@ export default {
   height: 100%;
 }
 ._input {
-  color: #949494;
+  color: #333;
 }
 .avatar {
   display: flex;

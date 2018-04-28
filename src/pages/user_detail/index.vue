@@ -100,7 +100,8 @@ export default {
   },
   methods: {
     ...ZanTab.methods,
-    _initData() {
+    async _initData() {
+      wx.showLoading({ title: "数据加载中...", mask: true });
       this.user_info = "";
       userDetail({ user_id: this.user_id }).then(res => {
         this.user_info = res.data.userinfo;
@@ -110,9 +111,11 @@ export default {
           this.getData("3");
         }
         this.article = res.data.article;
+        wx.hideLoading();
       });
     },
     loadMore() {
+      wx.showLoading({ title: "数据加载中...", mask: true });
       let api = this.sublist.selectedId;
       let num = api.match(/\d/)[0];
       let last_id = this.sublist.list[num - 1].last_id;
@@ -131,16 +134,8 @@ export default {
             this.sublist.list[num - 1].last_id = res.data[0]._id;
           } else {
             this.sublist.list[num - 1].last_id = "";
-            wx.showToast({
-              title: "我也是有底线的",
-              icon: "none"
-            });
           }
-        });
-      } else {
-        wx.showToast({
-          title: "我也是有底线的",
-          icon: "none"
+          wx.hideLoading();
         });
       }
     },

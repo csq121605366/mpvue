@@ -108,9 +108,7 @@ export default {
   },
   onLoad(options) {
     //type=='my'表示我的问题和回答 type=='all'表示相关科室的问答 如果传user_id则只查本人问
-    if (options && options.type == "my") {
-      this.type = options.type;
-    }
+    this.type = options.type;
     this.getData();
   }
 };

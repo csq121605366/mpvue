@@ -107,6 +107,8 @@ export default {
       this.qa_id = option.qa_id;
       this.form.qa_id = option.qa_id;
     }
+    this._initData();
+    this.qiniu();
   },
   data() {
     return {
@@ -133,6 +135,14 @@ export default {
         if (res.success) {
           this.qa = res.data;
         }
+      });
+    },
+    qiniu() {
+      // 获取七牛ticket
+      qiniuTicket().then(res => {
+        this.qiniuRegion = res.data.qiniuRegion;
+        this.qiniuTicket = res.data.qiniuTicket;
+        this.qiniuDomain = res.data.qiniuDomain;
       });
     },
     async uploadImg(filePath, cb) {
@@ -249,17 +259,6 @@ export default {
         });
       }
     }
-  },
-  onShow() {
-    // 获取七牛ticket
-    qiniuTicket().then(res => {
-      this.qiniuRegion = res.data.qiniuRegion;
-      this.qiniuTicket = res.data.qiniuTicket;
-      this.qiniuDomain = res.data.qiniuDomain;
-    });
-  },
-  mounted() {
-    this._initData();
   }
 };
 </script>

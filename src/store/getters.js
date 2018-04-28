@@ -6,6 +6,7 @@ const getters = {
   sortList: state => state.app.sortList,
   operationList: state => state.app.operationList,
   articleStatusList: state => state.app.articleStatusList,
+  times: state => state.app.times,
 
   id: state => state.user.id,
   name: state => state.user.name,

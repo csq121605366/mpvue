@@ -203,7 +203,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["articleStatusList", "role"])
+    ...mapGetters(["articleStatusList", "role", "status"])
   },
   onLoad() {
     this._initData();
@@ -219,7 +219,7 @@ export default {
       this._initData();
     },
     func() {
-      if (this.articleList && this.role != "0") {
+      if (this.role && this.role != "0") {
         return articleList;
       } else {
         return articlePaging;
@@ -234,7 +234,6 @@ export default {
           user_id: this.user_id,
           article_id: last_id,
           limit: this.limit,
-          status: this.status,
           sort: num.toString()
         }).then(res => {
           if (res.data.length) {
@@ -254,7 +253,6 @@ export default {
       return this.func()({
         user_id: this.user_id,
         limit: this.limit,
-        status: this.status,
         sort
       })
         .then(res => {

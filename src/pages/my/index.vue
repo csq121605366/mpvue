@@ -11,7 +11,7 @@
       </div>
       <div class="my_fun">
         <!--游客 -->
-        <div v-if="role==0">
+        <div v-if="role=='0'">
           <div class="zan-panel">
             <div @click="navigate('/pages/roleselect/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
@@ -29,7 +29,7 @@
         </div>
         <!-- 游客 -->
         <!--用户 -->
-        <div v-if="role==1">
+        <div v-if="role=='1'">
           <div class="zan-panel">
             <div @click="navigate('/pages/myinfo/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
@@ -47,11 +47,12 @@
         </div>
         <!-- 用户 -->
         <!-- 医生 -->
-        <div v-if="role==2">
+        <div v-if="role=='2'">
           <div class="zan-panel">
             <div @click="navigate('/pages/myinfo/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
               <div v-if="status=='1'" class="zan-cell__ft">审核中...</div>
+              <div v-if="status=='3'" class="zan-cell__ft">审核失败，修改后重新提交</div>
             </div>
             <div @click="navigate('/pages/user_list/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的科室</div>
@@ -77,9 +78,9 @@
         </div>
         <!-- 医生 -->
         <!-- 经纪人 -->
-        <div v-if="role==3">
+        <div v-if="role=='3'">
           <div class="zan-panel">
-            <navigator v-if="status==2" url="/pages/myinfo/main" class="zan-cell zan-cell--access">
+            <navigator v-if="status=='2'" url="/pages/myinfo/main" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
               <div class="zan-cell__ft"></div>
             </navigator>
@@ -89,7 +90,13 @@
             </div>
           </div>
           <div class="zan-panel">
-            <div class="zan-cell zan-cell--access">
+            <div @click="navigate('/pages/qa_list/main?type=my')" class="zan-cell zan-cell--access">
+              <div class="zan-cell__bd">我的回答</div>
+              <div class="zan-cell__ft"></div>
+            </div>
+          </div>
+          <div class="zan-panel">
+            <div @click="navigate('/pages/agency/main')" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">代理的医生</div>
               <div class="zan-cell__ft"></div>
             </div>
@@ -135,18 +142,7 @@ export default {
       });
     },
     navigate(url) {
-      if (this.role == "0") {
-        wx.showToast({
-          title: "请完善信息",
-          icon: "none",
-          mask: true,
-          success: function() {
-            wx.navigateTo({
-              url
-            });
-          }
-        });
-      } else if ((this.role == "2" || this.role == "3") && this.status != "2") {
+      if ((this.role == "2" || this.role == "3") && this.status == "1") {
         wx.showToast({
           title: "正在审核中...",
           icon: "none",

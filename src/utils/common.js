@@ -16,11 +16,25 @@ const asyncWrap = fn => (options = {}) =>
           if (res.data.success) {
             resolve(res.data);
           } else {
-            if (res.statusCode == 401) {
+            if (res.statusCode == 401 && store.getters.times > 0) {
+              store.dispatch('reduceTimes');
               store.dispatch("Login").then(res => {
                 store.dispatch("GetInfo");
               });
               reject(res.data);
+            } else if (res.statusCode == 403) {
+              wx.showToast({
+                title: "您的审核未通过，请修改后重新提交",
+                icon: "none",
+                mask: true,
+                success: function () {
+                  setTimeout(() => {
+                    wx.switchTab({
+                      url: "/pages/my/main"
+                    });
+                  }, 800);
+                }
+              });
             } else {
               wx.showToast({
                 title: res.data.error || res.data.message,

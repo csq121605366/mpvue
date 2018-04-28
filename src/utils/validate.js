@@ -227,7 +227,6 @@ class WxValidate {
        * 验证数组
        */
       isobject(value) {
-        console.log(JSON.stringify(value));
         return JSON.stringify(value) != "{}";
       }
     };

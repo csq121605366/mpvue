@@ -28,16 +28,24 @@ export function canUpdate() {
   });
 }
 
+//更新用户信息
 export function update(data) {
   return wx.requestAsync({
-    header: {
-      "content-type": "application/json"
-    },
     url: "app/update",
     method: "POST",
     data
   });
 }
+
+// app/updatelocaltion 增加用户地址信息
+export function updateLocaltion(data) {
+  return wx.requestAsync({
+    url: "app/updatelocaltion",
+    method: "POST",
+    data
+  });
+}
+
 //经理人获取潜在客户
 export function getFriend(data) {
   return wx.requestAsync({
@@ -46,6 +54,16 @@ export function getFriend(data) {
     data
   });
 }
+
+//经理人获取代理医生
+export function getAgency(data) {
+  return wx.requestAsync({
+    url: "app/agency/get",
+    method: "GET",
+    data
+  });
+}
+
 
 // 发送手机验证码
 export function sendCode(data) {

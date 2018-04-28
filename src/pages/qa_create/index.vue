@@ -10,7 +10,7 @@
           <div v-if="treamentShow">
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">问题标题</div>
-              <input type="text" v-model="form.title" placeholder="请填写问题题目" class="zan-field__input zan-cell__bd" />
+              <input type="text" @input="form.title=$event.target.value" placeholder="请填写问题题目" class="zan-field__input zan-cell__bd" />
             </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">询问科室</div>
@@ -25,7 +25,7 @@
             </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">所患疾病</div>
-              <input type="text" v-model="form.illness_name" placeholder="请填写所患疾病" class="zan-field__input zan-cell__bd" />
+              <input type="text" @input="form.illness_name=$event.target.value" placeholder="请填写所患疾病" class="zan-field__input zan-cell__bd" />
             </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">是否手术</div>
@@ -57,7 +57,7 @@
           <div class="zan-panel">
             <div class="zan-cell zan-field">
               <div class="zan-cell__bd">
-                <textarea class="content" v-model="form.content" placeholder="请简练描述您的年龄、性别、症状以及就诊经历，便于医生进行准确分析。(最多500字)" maxlength="500"></textarea>
+                <textarea class="content" @input="form.content=$event.target.value" placeholder="请简练描述您的年龄、性别、症状以及就诊经历，便于医生进行准确分析。(最多500字)" maxlength="500"></textarea>
               </div>
             </div>
           </div>
@@ -221,7 +221,7 @@ export default {
           rangelength: "标题字数范围3-25"
         },
         department: {
-          isobject:'请选择要提问的科室'
+          isobject: "请选择要提问的科室"
         },
         illness_name: {
           required: "请填写疾病类型"

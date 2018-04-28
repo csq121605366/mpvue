@@ -293,11 +293,8 @@ export default {
         title: {
           required: true,
           minlength: 1,
-          maxlength: 25
+          maxlength: 50
         }
-        // article_id: {
-        //   required: true
-        // }
       };
 
       // 验证字段的提示信息，若不传则调用默认的信息
@@ -305,11 +302,8 @@ export default {
         title: {
           required: "请填写文章标题",
           minlength: "文章标题最少一个字",
-          maxlength: "文章标题最多25个字"
+          maxlength: "文章标题最多50个字"
         }
-        // article_id: {
-        //   required: "请添加正文内容"
-        // }
       };
       // 创建实例对象
       this.WxValidate = new WxValidate(rules, messages);

@@ -23,7 +23,7 @@
         <div class="ft">
           <div class="look">
             <ul class="look_list" v-if="article.looked&&article.looked.length">
-              <li v-for="(item,index) in article.looked" :key="index"><img class="look_avatar" :src="item.avatar.imageURL+'-webp'" alt=""></li>
+              <li v-for="(item,index) in article.looked" :key="index"><img class="look_avatar" :src="item.avatar?item.avatar.imageURL+'-webp':item.avatarUrl" alt=""></li>
               <li class="look_num">{{article.lookedNum}}人查看</li>
             </ul>
           </div>
@@ -63,6 +63,7 @@ export default {
   },
   methods: {
     _initData() {
+      wx.showLoading({ title: "数据加载中...", mask: true });
       this.article = "";
       getDetail({ article_id: this.article_id }).then(res => {
         let data = res.data;
@@ -74,6 +75,7 @@ export default {
           '<img style="max-width:100%;height:auto" '
         );
         this.article = data;
+        wx.hideLoading();
       });
     }
   }
