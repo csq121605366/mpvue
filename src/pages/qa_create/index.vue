@@ -75,6 +75,7 @@ import cHeader from "@/components/cHeader";
 import { qiniuTicket, qaCreate } from "@/utils/api.js";
 import * as qiniu from "@/utils/qiniuUploader";
 import { mapGetters } from "vuex";
+import WxValidate from "@/utils/validate";
 export default {
   components: {
     cHeader
@@ -111,7 +112,7 @@ export default {
       },
       form: {
         title: "",
-        department: "",
+        department: {},
         illness_name: "",
         operation: "0",
         images: [],
@@ -195,26 +196,78 @@ export default {
         urls: [url]
       });
     },
-    submit() {
-      wx.showLoading({
-        title: "上传中...",
-        mask: true
-      });
-      qaCreate(this.form).then(res => {
-        if (res.success) {
-          this.form = Object.assign({}, this.oForm);
-          wx.hideLoading();
-          wx.showToast({
-            title: "提问成功",
-            icon: "success",
-            success: function() {
-              wx.switchTab({
-                url: "/pages/index/main"
-              });
-            }
-          });
+    validate() {
+      // 验证字段的规则
+      const rules = {
+        title: {
+          required: true,
+          rangelength: [3, 25]
+        },
+        department: {
+          isobject: true
+        },
+        illness_name: {
+          required: true
+        },
+        content: {
+          required: true,
+          rangelength: [10, 500]
         }
-      });
+      };
+      // 验证字段的提示信息，若不传则调用默认的信息
+      const messages = {
+        title: {
+          required: "请填写标题",
+          rangelength: "标题字数范围3-25"
+        },
+        department: {
+          isobject:'请选择要提问的科室'
+        },
+        illness_name: {
+          required: "请填写疾病类型"
+        },
+        content: {
+          required: "请填写详情",
+          rangelength: "详情字数范围10-500"
+        }
+      };
+      // 创建实例对象
+      this.WxValidate = new WxValidate(rules, messages);
+      if (!this.WxValidate.checkForm(this.form)) {
+        const error = this.WxValidate.errorList[0];
+        wx.showToast({
+          title: error.msg,
+          icon: "none",
+          mask: true
+        });
+        return false;
+      } else {
+        return true;
+      }
+    },
+    submit() {
+      let canSubmit = this.validate();
+      if (canSubmit) {
+        wx.showLoading({
+          title: "上传中...",
+          mask: true
+        });
+        qaCreate(this.form).then(res => {
+          if (res.success) {
+            this.form = Object.assign({}, this.oForm);
+            wx.hideLoading();
+            wx.showToast({
+              title: "提问成功",
+              icon: "success",
+              success: function() {
+                wx.switchTab({
+                  url: "/pages/index/main"
+                });
+              }
+            });
+          }
+        });
+      }
     }
   }
 };

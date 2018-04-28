@@ -38,6 +38,14 @@ export function update(data) {
     data
   });
 }
+//经理人获取潜在客户
+export function getFriend(data) {
+  return wx.requestAsync({
+    url: "app/friend/get",
+    method: "POST",
+    data
+  });
+}
 
 // 发送手机验证码
 export function sendCode(data) {
@@ -122,73 +130,70 @@ export function getDetail(data) {
 //首页进入时的文章列表
 export function articlePaging(data) {
   return wx.requestAsync({
-    url: 'app/article/paging',
-    method: 'POST',
+    url: "app/article/paging",
+    method: "POST",
     data
-  })
+  });
 }
-
 
 // 创建问题或回答
 export function qaCreate(data) {
   return wx.requestAsync({
-    url: 'app/qa/create',
-    method: 'POST',
+    url: "app/qa/create",
+    method: "POST",
     data
-  })
+  });
 }
 
 //回答问题
 export function qaAnswer(data) {
   return wx.requestAsync({
-    url: 'app/qa/answer',
-    method: 'POST',
+    url: "app/qa/answer",
+    method: "POST",
     data
-  })
+  });
 }
 
 // 获取问答列表
 export function qaSearch(data) {
   return wx.requestAsync({
-    url: 'app/qa/search',
-    method: 'POST',
+    url: "app/qa/search",
+    method: "POST",
     data
-  })
+  });
 }
 
 //问答详情
 export function qaDetail(data) {
   return wx.requestAsync({
-    url: 'app/qa/detail',
-    method: 'post',
+    url: "app/qa/detail",
+    method: "post",
     data
-  })
+  });
 }
-
-
 
 //获取科室用户列表
 export function userListByDepartment(data) {
   return wx.requestAsync({
-    url: 'app/user/department',
+    url: "app/user/department",
     method: "POST",
     data
-  })
+  });
 }
 //用户详情
 export function userDetail(data) {
   return wx.requestAsync({
-    url: 'app/user/detail',
-    method: 'POST',
+    url: "app/user/detail",
+    method: "POST",
     data
-  })
+  });
 }
 
 // 混合搜索
 export function search(data) {
   return wx.requestAsync({
-    url: 'app/search',
-    method: 'POST',
+    url: "app/search",
+    method: "POST",
     data
-  })
+  });
 }

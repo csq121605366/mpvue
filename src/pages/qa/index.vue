@@ -7,7 +7,7 @@
         <div class="link">
           <div v-if="role=='1'||role=='0'" class="link_item zan-hairline--bottom">
             <div class="link_item_logo iconfont icon-liuyan"></div>
-            <nav @click="navigate('/pages/qa_create/main')" class="link_item_txt">
+            <nav @click="navigateTo('/pages/qa_create/main')" class="link_item_txt">
               <h3 class="link_item_title">快速提问</h3>
               <p class="link_item_subtitle">描述症状邀请科室所有医生解答</p>
               <div class="zan-arrow"></div>
@@ -15,7 +15,7 @@
           </div>
           <div v-if="role=='1'||role=='0'" class="link_item zan-hairline--bottom">
             <div class="link_item_logo iconfont icon-tuandui"></div>
-            <nav @click="navigate('/pages/user_list/main')" class="link_item_txt">
+            <nav @click="navigateTo('/pages/user_list/main')" class="link_item_txt">
               <h3 class="link_item_title">查医生</h3>
               <p class="link_item_subtitle">快速了解科室医生</p>
               <div class="zan-arrow"></div>
@@ -23,7 +23,7 @@
           </div>
           <div v-if="role=='2'||role=='3'" class="link_item zan-hairline--bottom">
             <div class="link_item_logo iconfont icon-tuandui"></div>
-            <nav @click="navigate('/pages/qa_list/main')" class="link_item_txt">
+            <nav @click="navigateTo('/pages/qa_list/main')" class="link_item_txt">
               <h3 class="link_item_title">问诊列表</h3>
               <p class="link_item_subtitle">科室相关问题列表</p>
               <div class="zan-arrow"></div>
@@ -31,7 +31,7 @@
           </div>
           <div v-if="role=='2'||role=='3'" class="link_item zan-hairline--bottom">
             <div class="link_item_logo iconfont icon-tuandui"></div>
-            <nav @click="navigate('/pages/user_list/main')" class="link_item_txt">
+            <nav @click="navigateTo('/pages/user_list/main')" class="link_item_txt">
               <h3 class="link_item_title">科室成员</h3>
               <p class="link_item_subtitle">科室相关成员</p>
               <div class="zan-arrow"></div>
@@ -39,17 +39,20 @@
           </div>
         </div>
         <div class="qa_dynamic">
-          <div class="menu">
-            
+          <div class="qa_menu">
+            <span>健康问答动态</span>
+            <div @click="qaRefresh" class="qa_refresh">换一批
+              <i class="iconfont icon-shuaxin"></i>
+            </div>
           </div>
-          <ul v-if="qa.list.length" class="qalist">
-            <li v-if="item.id == qa.selectedId" v-for="(item,index) in qa.list" @click="navigateTo(item._id)" class="qalist_item zan-hairline--bottom" :key="index">
+          <ul v-if="list&&list.length" class="qalist">
+            <li v-for="(item,index) in list" @click="navigateTo('/pages/qa_detail/main?qa_id='+item._id)" class="qalist_item zan-hairline--bottom" :key="index">
               <h3 class="qalist_title zan-ellipsis">问：{{item.title}}</h3>
               <p class="qalist_precontent zan-ellipsis">
                 {{item.content}}
               </p>
               <div class="qalist_info">
-                <i v-if="item.answer.length" class="qalist_mark iconfont icon-biaoji"> 已回复</i>健康无忧 {{item.created}}</div>
+                <i v-if="item.answer_count" class="qalist_mark iconfont icon-biaoji"> 已回复</i>健康无忧 {{item.created}}</div>
             </li>
           </ul>
           <div class="qalist_tip" v-else>
@@ -65,28 +68,57 @@
 <script>
 import cHeader from "@/components/cHeader";
 import { mapGetters } from "vuex";
+import { qaSearch } from "@/utils/api";
 export default {
   components: {
     cHeader
   },
   data() {
     return {
-      qa: {
-        list: [],
-        scroll: false,
-        selectedId: ""
-      }
+      list: [],
+      last_id: ""
     };
   },
   computed: {
     ...mapGetters(["role", "status", "department"])
   },
   methods: {
-    navigate(url, param) {
+    getData() {
+      let param = { limit: 4 };
+      if (this.last_id) {
+        param = Object.assign({}, param, { last_id: this.last_id });
+      }
+      qaSearch(param).then(res => {
+        this.list = res.data;
+        let last = this.list[this.list.length - 1];
+        this.last_id = last ? last._id : "";
+      });
+    },
+    qaRefresh() {
+      if (this.last_id) {
+        this.getData();
+      } else {
+        wx.showToast({
+          title: "没有更多了,下拉可刷新",
+          icon: "none"
+        });
+      }
+    },
+    navigateTo(url) {
       wx.navigateTo({
         url: url
       });
     }
+  },
+  onLoad() {
+    this.getData();
+  },
+  onPullDownRefresh() {
+    this.last_id = "";
+    this.getData();
+    setTimeout(() => {
+      wx.stopPullDownRefresh();
+    }, 800);
   },
   onShow() {
     //病人进来为提问页面 医生进来为问题列表
@@ -149,6 +181,28 @@ export default {
   color: #999;
 }
 
+.qa_dynamic {
+  padding: 0 20px;
+  border-top: 10px solid #eaeaea;
+}
+.qa_menu {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  padding: 10px 0;
+  font-size: 16px;
+}
+.qa_refresh {
+  font-size: 14px;
+  color: #2bb5f5;
+  cursor: pointer;
+}
+.qa_refresh .iconfont {
+  display: inline-block;
+}
 .qalist_item {
   padding: 4px 0 6px;
   position: relative;

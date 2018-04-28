@@ -161,8 +161,8 @@
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">潜在客户</div>
               <div class="zan-cell__bd department_show">
-                <div v-if="form.friend.length==0" class="department_tip">添加潜在客户(长按删除)</div>
-                <div @longpress="form.friend.splice(index,1)" class="department_tag" v-for="(item,index) in form.friend" :key="index">
+                <div v-if="form.friend.length==0" class="department_tip">添加潜在客户(点击修改,长按删除)</div>
+                <div @longpress="form.friend.splice(index,1)" @click="navigateTo('/pages/addfriend/main?friend_id='+item._id)" class="department_tag" v-for="(item,index) in form.friend" :key="index">
                   {{item.name}}
                 </div>
               </div>
@@ -534,6 +534,9 @@ export default {
       wx.previewImage({
         urls: [url]
       });
+    },
+    navigateTo(url) {
+      wx.navigateTo({ url });
     },
     descTextAreaBlur(e) {
       console.log(e);

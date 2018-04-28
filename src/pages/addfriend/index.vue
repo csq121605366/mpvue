@@ -70,7 +70,7 @@
 import cHeader from "@/components/cHeader";
 import ZanField from "@/components/zan/field";
 import ZanSelect from "@/components/zan/select";
-import { titleList, mainDepart, viceDepart } from "@/utils/api.js";
+import { titleList, mainDepart, viceDepart, getFriend } from "@/utils/api.js";
 import WxValidate from "@/utils/validate";
 export default {
   name: "addfriend",
@@ -124,11 +124,19 @@ export default {
       this.form.hospital = hospital;
     }
   },
-  onLoad: function() {
+  onLoad: function(options) {
+    if (options.friend_id) {
+      this.getFriendData(options.friend_id);
+    }
     this.getTitleList();
     this.getmainDepart();
   },
   methods: {
+    getFriendData(param) {
+      getFriend({ friend_id: param }).then(res => {
+        this.form = res.data;
+      });
+    },
     getTitleList() {
       titleList().then(res => {
         this.picker.titleList = res.data;

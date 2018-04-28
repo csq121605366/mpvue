@@ -93,8 +93,8 @@
               <div class="zan-cell__bd">代理的医生</div>
               <div class="zan-cell__ft"></div>
             </div>
-            <div class="zan-cell zan-cell--access">
-              <div class="zan-cell__bd">代理的科室</div>
+            <div @click="navigate('/pages/user_list/main')" class="zan-cell zan-cell--access">
+              <div class="zan-cell__bd">我的科室</div>
               <div class="zan-cell__ft"></div>
             </div>
           </div>

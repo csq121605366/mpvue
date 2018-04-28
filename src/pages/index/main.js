@@ -6,7 +6,6 @@ app.$mount();
 
 export default {
   config: {
-    onReachBottomDistance: 60,
     enablePullDownRefresh: true,
     onReachBottomDistance: 60
   }

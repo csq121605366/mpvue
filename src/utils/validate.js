@@ -84,7 +84,7 @@ class WxValidate {
         return (
           that.optional(value) ||
           /^[\u4E00-\u9FA5]{2,5}(?:·[\u4E00-\u9FA5]{2,5})*$/.test(value)
-        )
+        );
       },
 
       /**
@@ -227,8 +227,9 @@ class WxValidate {
        * 验证数组
        */
       isobject(value) {
+        console.log(JSON.stringify(value));
         return JSON.stringify(value) != "{}";
-      },
+      }
     };
   }
 
@@ -263,7 +264,7 @@ class WxValidate {
   formatTpl(source, params) {
     const that = this;
     if (arguments.length === 1) {
-      return function () {
+      return function() {
         let args = Array.from(arguments);
         args.unshift(source);
         return that.formatTpl.apply(this, args);
@@ -278,8 +279,8 @@ class WxValidate {
     if (params.constructor !== Array) {
       params = [params];
     }
-    params.forEach(function (n, i) {
-      source = source.replace(new RegExp("\\{" + i + "\\}", "g"), function () {
+    params.forEach(function(n, i) {
+      source = source.replace(new RegExp("\\{" + i + "\\}", "g"), function() {
         return n;
       });
     });
