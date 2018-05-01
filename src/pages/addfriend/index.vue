@@ -5,17 +5,22 @@
       <div class="zan-panel">
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">姓名</div>
-          <input type="text" v-model="form.name" placeholder="请输入姓名" class="zan-field__input zan-cell__bd" />
+          <input type="text" @input="form.name = $event.target.value" :placeholder="form.name||'请输入姓名'" class="zan-field__input zan-cell__bd" />
         </div>
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">性别</div>
-          <picker range-key="value" :range="picker.genderList" @change="genderChange" :value="picker.gender">
-            <input type="text" :value="picker.genderList[picker.gender].value" disabled class="zan-field__input zan-cell__bd" />
-          </picker>
+          <div class="zan-cell__bd">
+            <input type="text" disabled :placeholder="picker.genderList[form.gender].value||'请输入手机号'" class="zan-field__input zan-cell__bd">
+          </div>
+          <div class="zan-cell__ft">
+            <picker range-key="value" :range="picker.genderList" @change="genderChange" :value="picker.gender">
+              <button class="zan-btn zan-btn--mini zan-btn--primary">选择性别</button>
+            </picker>
+          </div>
         </div>
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">手机号</div>
-          <input type="text" v-model="form.phone" placeholder="请输入手机号" class="zan-field__input zan-cell__bd" />
+          <input type="number" @input="form.phone = $event.target.value" :placeholder="form.phone||'请输入手机号'" class="zan-field__input zan-cell__bd" />
         </div>
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">医院</div>
@@ -32,24 +37,24 @@
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">科室</div>
           <div class="zan-cell__bd department_show">
-            <view v-if="form.department.length==0" class="department_tip">选择科室(长按删除)</view>
-            <view v-else>
-              <span @longpress="form.department.splice(index, 1)" class="department_tag" v-for="(item,index) in form.department" :key="index">
-                {{item.label}}
-              </span>
-            </view>
+            <input type="text" disabled :value="form.department.label">
           </div>
           <div class="zan-cell__ft">
-            <picker mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
+            <picker v-if="form.department" mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
               <button class="zan-btn zan-btn--mini zan-btn--primary">选择科室</button>
             </picker>
           </div>
         </div>
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">职称</div>
-          <picker v-if="picker.titleList.length" range-key="label" :range="picker.titleList" @change="titleChange" :value="picker.title">
-            <input type="text" :value="picker.titleList[picker.title].label" disabled class="zan-field__input zan-cell__bd" />
-          </picker>
+          <div class="zan-cell__bd">
+            <input type="text" :value="form.title||'请选择职称'" disabled class="zan-field__input zan-cell__bd" />
+          </div>
+          <div class="zan-cell__ft">
+            <picker v-if="picker.titleList.length" range-key="label" :range="picker.titleList" @change="titleChange">
+              <button class="zan-btn zan-btn--mini zan-btn--primary">选择职称</button>
+            </picker>
+          </div>
         </div>
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">简介</div>
@@ -85,6 +90,10 @@ export default {
         gender: 0,
         genderList: [
           {
+            key: "0",
+            value: "保密"
+          },
+          {
             key: "1",
             value: "男"
           },
@@ -95,7 +104,6 @@ export default {
         ],
         department: [0, 0],
         departmentList: [],
-        title: 0,
         titleList: []
       },
       oform: {
@@ -104,7 +112,7 @@ export default {
         title: "",
         phone: "",
         hospital: {},
-        department: [],
+        department: {},
         description: ""
       },
       form: {
@@ -113,7 +121,7 @@ export default {
         title: "",
         phone: "",
         hospital: {},
-        department: [],
+        department: {},
         description: ""
       }
     };
@@ -125,9 +133,11 @@ export default {
     }
   },
   onLoad: function(options) {
-    if (options.friend_id) {
-      this.getFriendData(options.friend_id);
+    if (options.friend) {
+      this.form = JSON.parse(options.friend);
+      this.friend_index = options.friend_index;
     }
+    console.log(this.form);
     this.getTitleList();
     this.getmainDepart();
   },
@@ -141,12 +151,13 @@ export default {
       titleList().then(res => {
         this.picker.titleList = res.data;
         // 设置默认值
-        this.form.title = res.data[0]["name"];
+        // this.form.title = res.data[0]["name"];
       });
     },
     titleChange(e) {
-      this.picker.title = e.target.value;
-      this.form.title = this.picker.titleList[this.picker.title]._id;
+      let index = e.target.value;
+      this.form.title = this.picker.titleList[index].label;
+      console.log( this.picker.titleList[index], this.form.title )
     },
     genderChange(e) {
       //性别选择成功
@@ -156,13 +167,12 @@ export default {
     departmentChange(e) {
       //科室选择成功
       let cIndex = e.target.value[1];
-      let oSelectArr = this.form.department;
-      if (oSelectArr.length < 1) {
+      if (this.form.department) {
         let obj = {
           label: this.viceDepartList[cIndex].label,
           key: this.viceDepartList[cIndex].key
         };
-        this.form.department.push(obj);
+        this.form.department = obj;
       } else {
         wx.showToast({
           title: "最多选择一个科室",
@@ -229,8 +239,7 @@ export default {
           isobject: true
         },
         department: {
-          required: true,
-          isarray: true
+          isobject: true
         }
       };
 
@@ -247,8 +256,7 @@ export default {
           isobject: "请添加医院信息"
         },
         department: {
-          required: "请添加科室信息",
-          isarray: "科室信息不能为空"
+          isobject: "请添加科室信息"
         }
       };
       // 创建实例对象
@@ -265,7 +273,8 @@ export default {
         let pages = getCurrentPages(); //当前页面
         let prevPage = pages[pages.length - 2]; //上一页面
         prevPage.setData({
-          friend: this.form
+          friend: this.form,
+          friend_index: this.friend_index || ""
         });
         wx.navigateBack();
       }

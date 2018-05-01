@@ -22,7 +22,7 @@ page {
 }
 .container {
   /* background-color: #f0f0f0; */
-  position: relative;
+  position: absolute;
   top: 70px;
   left: 0;
   box-sizing: border-box;

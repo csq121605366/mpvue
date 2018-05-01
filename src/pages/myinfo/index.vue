@@ -6,7 +6,7 @@
         <div class="zan-panel">
           <div class="zan-cell">
             <div class="zan-cell__bd">头像</div>
-            <div class="zan-cell__ft avatar"><img :src="(avater&avatar.imageURL)?avatar.imageURL:avatarUrl" alt=""></div>
+            <div class="zan-cell__ft avatar"><img :src="avatar?avatar.imageURL:avatarUrl" alt=""></div>
           </div>
           <div class="zan-cell">
             <div class="zan-cell__bd">姓名</div>

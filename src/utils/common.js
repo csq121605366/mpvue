@@ -17,7 +17,7 @@ const asyncWrap = fn => (options = {}) =>
             resolve(res.data);
           } else {
             if (res.statusCode == 401 && store.getters.times > 0) {
-              store.dispatch('reduceTimes');
+              store.dispatch("reduceTimes");
               store.dispatch("Login").then(res => {
                 store.dispatch("GetInfo");
               });
@@ -27,7 +27,7 @@ const asyncWrap = fn => (options = {}) =>
                 title: "您的审核未通过，请修改后重新提交",
                 icon: "none",
                 mask: true,
-                success: function () {
+                success: function() {
                   setTimeout(() => {
                     wx.switchTab({
                       url: "/pages/my/main"

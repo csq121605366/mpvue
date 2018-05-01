@@ -13,21 +13,26 @@
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">姓名</div>
-            <input type="text" @input="form.name = $event.target.value" placeholder="请输入姓名" class="zan-field__input zan-cell__bd" />
+            <input type="text" @input="form.name = $event.target.value" :placeholder="form.name||'请输入姓名'" class="zan-field__input zan-cell__bd" />
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">性别</div>
-            <picker range-key="value" :range="picker.genderList" @change="genderChange" :value="picker.gender">
-              <input type="text" :value="picker.genderList[picker.gender].value" disabled class="zan-field__input zan-cell__bd" />
-            </picker>
+            <div class="zan-cell__bd">
+              <input type="text" disabled :placeholder="picker.genderList[form.gender].value||'请输入手机号'" class="zan-field__input zan-cell__bd">
+            </div>
+            <div class="zan-cell__ft">
+              <picker range-key="value" :range="picker.genderList" @change="genderChange" :value="picker.gender">
+                <button class="zan-btn zan-btn--mini zan-btn--primary">选择性别</button>
+              </picker>
+            </div>
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">手机号</div>
-            <input type="text" @input="form.phone = $event.target.value" placeholder="请输入手机号" class="zan-field__input zan-cell__bd" />
+            <input type="number" @input="form.phone = $event.target.value" :placeholder="form.phone||'请输入手机号'" class="zan-field__input zan-cell__bd" />
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">验证码</div>
-            <input type="text"  @input="form.code = $event.target.value" placeholder="请输入短信验证码" class="zan-field__input zan-cell__bd" />
+            <input type="number" @input="form.code = $event.target.value" placeholder="请输入短信验证码" class="zan-field__input zan-cell__bd" />
             <div class="zan-cell__ft">
               <button @click="sendCode" :disabled="sendCodeing" class="zan-btn zan-btn--mini zan-btn--primary">获取验证码</button>
             </div>
@@ -162,7 +167,7 @@
               <div class="zan-cell__hd zan-field__title">潜在客户</div>
               <div class="zan-cell__bd department_show">
                 <div v-if="form.friend.length==0" class="department_tip">添加潜在客户(点击修改,长按删除)</div>
-                <div @longpress="form.friend.splice(index,1)" @click="navigateTo('/pages/addfriend/main?friend_id='+item._id)" class="department_tag" v-for="(item,index) in form.friend" :key="index">
+                <div @longpress="form.friend.splice(index,1)" @click="friendAdd(index)" class="department_tag" v-for="(item,index) in form.friend" :key="index">
                   {{item.name}}
                 </div>
               </div>
@@ -191,7 +196,7 @@
             <div v-if="form.department.length" v-for="(item,index) in form.department" :key="index" class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">{{item.label}}</div>
               <div class="zan-cell__bd">
-                <input type="text" v-model="form.agency[index].name" placeholder="填写主治医生(以空格隔开)" class="zan-field__input zan-cell__bd" />
+                <input type="text" @input="form.agency[index].name = $event.target.value" :placeholder="form.agency[index]?form.agency[index].name:'请输入姓名'" class="zan-field__input zan-cell__bd" />
               </div>
             </div>
           </div>
@@ -232,6 +237,10 @@ export default {
       picker: {
         gender: 0,
         genderList: [
+          {
+            key: "0",
+            value: "保密"
+          },
           {
             key: "1",
             value: "男"
@@ -298,8 +307,16 @@ export default {
   },
   onShow() {
     let friend = this.$mp.page.data.friend;
+    let friend_index = this.$mp.page.data.friend_index;
+    console.log(" this.picker.titleList[index]", this.$mp.page.data);
     if (friend && this.form.role == 3) {
-      this.form.friend.push(friend);
+      console.log(friend);
+      if (friend_index) {
+        this.form.friend[friend_index] = friend;
+        console.log("this.form.friend", this.form.friend);
+      } else {
+        this.form.friend.push(friend);
+      }
     }
     let hospital = this.$mp.page.data.hospital;
     if (hospital && this.form.role == 2) {
@@ -461,7 +478,7 @@ export default {
     },
     InputChange(param, e) {
       this.form[param] = e.target.value;
-      console.log(e.target.value)
+      console.log(e.target.value);
     },
     sendCode(e) {
       if (authType.phone.reg.test(this.form.phone)) {
@@ -552,8 +569,14 @@ export default {
     navigateTo(url) {
       wx.navigateTo({ url });
     },
-    descTextAreaBlur(e) {
-      console.log(e);
+    friendAdd(index) {
+      wx.navigateTo({
+        url:
+          "/pages/addfriend/main?friend_index=" +
+          index +
+          "&friend=" +
+          JSON.stringify(this.form.friend[index])
+      });
     },
     validate() {
       // 验证字段的规则

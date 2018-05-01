@@ -262,10 +262,13 @@ export default {
           }
         })
         .catch(res => {
+          if (!this.canRefresh) {
+            this.canRefresh = true;
+            setTimeout(() => {
+              this.refresh();
+            }, 800);
+          }
           //如果用户重置了系统这里进行首页页面更新
-          setTimeout(() => {
-            this.refresh();
-          }, 800);
         });
     },
     navigate(item) {

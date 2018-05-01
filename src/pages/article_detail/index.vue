@@ -16,7 +16,7 @@
           <rich-text class="richText" :nodes="article.content"></rich-text>
           <ul v-if="article.videos&&article.videos.length" class="meida">
             <li v-for="(item,index) in article.videos" :key="index">
-              <video :src="item.videoURL" controls show-fullscreen-btn></video>
+              <video class="video" :src="item.videoURL" controls show-fullscreen-btn></video>
             </li>
           </ul>
         </div>
@@ -134,5 +134,8 @@ export default {
 }
 .richText {
   word-wrap: break-word;
+}
+.video {
+  width: 100%;
 }
 </style>

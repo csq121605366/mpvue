@@ -80,14 +80,11 @@
         <!-- 经纪人 -->
         <div v-if="role=='3'">
           <div class="zan-panel">
-            <navigator v-if="status=='2'" url="/pages/myinfo/main" class="zan-cell zan-cell--access">
+             <navigator url="/pages/myinfo/main" class="zan-cell zan-cell--access">
               <div class="zan-cell__bd">我的信息</div>
-              <div class="zan-cell__ft"></div>
+              <div v-if="status=='1'" class="zan-cell__ft">审核中...</div>
+              <div v-if="status=='3'" class="zan-cell__ft">审核失败，修改后重新提交</div>
             </navigator>
-            <div v-else class="zan-cell zan-cell--access">
-              <div class="zan-cell__bd">我的信息</div>
-              <div class="zan-cell__ft zan-c-red">审核中...</div>
-            </div>
           </div>
           <div class="zan-panel">
             <div @click="navigate('/pages/qa_list/main?type=my')" class="zan-cell zan-cell--access">

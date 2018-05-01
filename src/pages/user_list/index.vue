@@ -12,7 +12,7 @@
             <div class="list_role_list" v-for="(x,i) in item.data['2']" :key="i" @click="navigate(x._id)">
               <div class="list_role_item zan-hairline--bottom">
                 <div class="list_role_avatar">
-                  <img :src="x.avatar.imageURL" alt="">
+                  <img :src="x.avatar?x.avatar.imageURL:x.avatarUrl" alt="">
                 </div>
                 <div class="list_role_info">
                   <span class="list_role_item_name">{{x.name}}</span>
@@ -26,7 +26,7 @@
             <div class="list_role_list" v-for="(x,i) in item.data['3']" :key="i" @click="navigate(x._id)">
               <div class="list_role_item zan-hairline--bottom">
                 <div class="list_role_avatar">
-                  <img :src="x.avatar.imageURL" alt="">
+                  <img :src="x.avatar?x.avatar.imageURL:x.avatarUrl" alt="">
                 </div>
                 <div class="list_role_info">
                   <span class="list_role_item_name">{{x.name}}</span>
@@ -40,7 +40,7 @@
             <div class="list_role_list" v-for="(x,i) in item.data['1']" :key="i" @click="navigate(x._id)">
               <div class="list_role_item zan-hairline--bottom">
                 <div class="list_role_avatar">
-                  <img :src="x.avatar.imageURL" alt="">
+                  <img :src="x.avatar?x.avatar.imageURL:x.avatarUrl" alt="">
                 </div>
                 <div class="list_role_info">
                   <span class="list_role_item_name">{{x.name}}</span>
