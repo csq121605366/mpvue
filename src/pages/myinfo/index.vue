@@ -6,7 +6,7 @@
         <div class="zan-panel">
           <div class="zan-cell">
             <div class="zan-cell__bd">头像</div>
-            <div class="zan-cell__ft avatar"><img :src="avatar?avatar.imageURL:avatarUrl" alt=""></div>
+            <div class="zan-cell__ft avatar"><img :src="avatar?avatar.imageURL:avatarUrl" @click="imgsPrev(avatar?avatar.imageURL:avatarUrl)" alt=""></div>
           </div>
           <div class="zan-cell">
             <div class="zan-cell__bd">姓名</div>
@@ -73,6 +73,13 @@ export default {
       "title",
       "description"
     ])
+  },
+  methods: {
+    imgsPrev(url) {
+      wx.previewImage({
+        urls: [url]
+      });
+    }
   }
 };
 </script>

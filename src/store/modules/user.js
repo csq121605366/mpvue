@@ -4,22 +4,23 @@ const user = {
   state: {
     id: "",
     name: "",
+    idcard: "",
     avatar: {},
-    avatarUrl: '',
+    avatarUrl: "",
     role: "", // 0:游客 1:普通用户 2:医生 3:经理人 9:前台页面管理员
-    rolelist: ['游客', '用户', '医生', '经理人'],
+    rolelist: ["游客", "用户", "医生", "经理人"],
     status: "", // 用户账号状态 0保留 1未激活 2已激活 3已锁定(也叫审核未通过) 9已删除
     phone: "",
     hospital: "",
-    certificate: '',
-    gender: '',
-    genderlist: ['未知', '男性', '女性'],// 0代表未知 1代表男性 2代表女性
-    department: '',
-    agency: '',
-    friend: '',
-    title: '',
-    treatment_info: '',
-    description: '',
+    certificate: "",
+    gender: "",
+    genderlist: ["未知", "男性", "女性"], // 0代表未知 1代表男性 2代表女性
+    department: "",
+    agency: "",
+    friend: "",
+    title: "",
+    treatment_info: "",
+    description: ""
   },
 
   mutations: {
@@ -28,6 +29,9 @@ const user = {
     },
     SET_NAME: (state, param) => {
       state.name = param;
+    },
+    SET_IDCARD: (state, param) => {
+      state.idcard = param;
     },
     SET_AVATAR: (state, param) => {
       state.avatar = param;
@@ -121,6 +125,7 @@ const user = {
             const data = response.data;
             commit("SET_ID", data._id);
             commit("SET_ROLE", data.role);
+            commit("SET_IDCARD", data.idcard);
             commit("SET_NAME", data.name);
             commit("SET_AVATARURL", data.avatarUrl);
             commit("SET_AVATAR", data.avatar);
@@ -129,14 +134,14 @@ const user = {
             commit("SET_DEPARTMENT", data.department);
             commit("SET_GENDER", data.gender);
             //1普通用户 2医生 3经纪人
-            if (data.role == '1') {
+            if (data.role == "1") {
               commit("SET_TREATMENT_INFO", data.treatment_info);
-            } else if (data.role == '2') {
+            } else if (data.role == "2") {
               commit("SET_HOSPITAL", data.hospital);
               commit("SET_CERTIFICATE", data.certificate);
               commit("SET_TITLE", data.title);
               commit("SET_DESCRIPTION", data.description);
-            } else if (data.role == '3') {
+            } else if (data.role == "3") {
               commit("SET_FRIEND", data.friend);
               commit("SET_AGENCY", data.agency);
             }

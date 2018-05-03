@@ -24,6 +24,10 @@
             <input type="text" v-model="operationList[qa.operation]" disabled placeholder="请填写是否手术" disabled class="zan-field__input zan-cell__bd" />
           </div>
         </div>
+        <div v-if="qa.meta" class="zan-cell zan-field">
+          <div class="zan-cell__hd zan-field__title">提问时间</div>
+          <input type="text" v-model="qa.meta.created" disabled placeholder="请填写所患疾病" class="zan-field__input zan-cell__bd" />
+        </div>
         <div v-if="qa.images&&qa.images.length" class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">就诊信息</div>
           <div class="zan-cell__bd">
@@ -42,7 +46,7 @@
         </div>
         <!-- 已经回复内容 -->
         <div v-if="qa.answer&&qa.answer.length" v-for="(item,index) in qa.answer" :key="index">
-          <view class="zan-panel-title treatment_title">{{item.title||'经理人'}}-{{item.name}}：</view>
+          <view class="zan-panel-title treatment_title">{{item.title||'经理人'}}-{{item.name}}{{'-'+item.created?item.created:''}}：</view>
           <div class="zan-cell zan-field">
             <div class="zan-cell__bd">
               <div class="qa_content">{{item.content}}</div>
@@ -97,6 +101,7 @@ import { debounce } from "@/utils";
 import { mapGetters } from "vuex";
 import * as qiniu from "@/utils/qiniuUploader";
 import WxValidate from "@/utils/validate";
+import { formatTime } from "@/utils";
 export default {
   name: "qa_detail",
   components: {
@@ -133,9 +138,20 @@ export default {
       this.form.images = [];
       qaDetail({ qa_id: this.qa_id }).then(res => {
         if (res.success) {
-          this.qa = res.data;
+          let data = res.data;
+          data.meta.created = this.formatTime(data.meta.created);
+          data.answer.forEach((element, index) => {
+            if (element.created) {
+              data.answer[index].created = this.formatTime(element.created);
+            }
+          });
+          this.qa = data;
         }
       });
+    },
+    formatTime(param) {
+      let date = new Date(param);
+      return formatTime(date);
     },
     qiniu() {
       // 获取七牛ticket

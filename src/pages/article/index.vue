@@ -34,7 +34,7 @@
           <div class="image_info">
             <div class="image_tip zan-c-gray">上传图片 资源个数：{{form.images.length}} / 9 (长按删除)</div>
             <div class="image_img_list">
-              <div @longpress="form.images.splice(index,1)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.images" :key="index" class="image_img_item">
+              <div @longpress="form.images.splice(index,1)" @click="assetsHandle('images',index,item.imageURL)" v-for="(item,index) in form.images" :key="index" class="image_img_item">
                 <image class="image_img_image" :src="item.imageURL+'-webp'"></image>
               </div>
               <div @click="imgsAdd" class="image_img_item">
@@ -48,7 +48,7 @@
           <div class="image_info">
             <div class="image_tip zan-c-gray">上传视频(长按删除)</div>
             <div class="image_img_list">
-              <div @longpress="form.videos.splice(index, 1)" v-for="(item,index) in form.videos" :key="index" class="image_img_item-video">
+              <div @longpress="form.videos.splice(index, 1)" @click="assetsHandle('videos',index,item.imageURL)" v-for="(item,index) in form.videos" :key="index" class="image_img_item-video">
                 <video class="image_img_video" :src="item.videoURL"></video>
               </div>
               <div @click="videoAdd" v-if="videMaxItem>form.videos.length" class="image_img_item">
@@ -191,6 +191,19 @@ export default {
         res => {}
       );
     },
+    assetsHandle(target, index, url) {
+      let self = this;
+      wx.showActionSheet({
+        itemList: ["查看", "删除"],
+        success: function(res) {
+          if (res.tapIndex == 0) {
+            self.imgsPrev(url);
+          } else {
+            self.form[target].splice(index, 1);
+          }
+        }
+      });
+    },
     creatImg(videoPath) {
       return new Promise((resolve, reject) => {
         console.log("videoPath", videoPath);
@@ -230,8 +243,10 @@ export default {
                 this.$store
                   .dispatch("qiniuUpload", tempFilePath)
                   .then(video => {
+                    console.log(video, this.form.videos);
                     wx.hideLoading();
                     this.form.videos.push(video);
+                    console.log(this.form.videos);
                   });
               } else {
                 wx.showToast({

@@ -13,7 +13,7 @@
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">姓名</div>
-            <input type="text" @input="form.name = $event.target.value" :placeholder="form.name||'请输入姓名'" class="zan-field__input zan-cell__bd" />
+            <input type="text" @input="form.name = $event.target.value" :placeholder="form.name||'请输入姓名(只允许输入汉字)'" class="zan-field__input zan-cell__bd" />
           </div>
           <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">性别</div>
@@ -27,6 +27,10 @@
             </div>
           </div>
           <div class="zan-cell zan-field">
+            <div class="zan-cell__hd zan-field__title">身份证号</div>
+            <input type="number" @input="form.idcard = $event.target.value" :placeholder="form.idcard||'请输入身份证号码'" class="zan-field__input zan-cell__bd" />
+          </div>
+          <div class="zan-cell zan-field">
             <div class="zan-cell__hd zan-field__title">手机号</div>
             <input type="number" @input="form.phone = $event.target.value" :placeholder="form.phone||'请输入手机号'" class="zan-field__input zan-cell__bd" />
           </div>
@@ -34,13 +38,9 @@
             <div class="zan-cell__hd zan-field__title">验证码</div>
             <input type="number" @input="form.code = $event.target.value" placeholder="请输入短信验证码" class="zan-field__input zan-cell__bd" />
             <div class="zan-cell__ft">
-              <button @click="sendCode" :disabled="sendCodeing" class="zan-btn zan-btn--mini zan-btn--primary">获取验证码</button>
+              <button @click="sendCode" :disabled="sendCodeing" class="zan-btn zan-btn--mini zan-btn--primary">{{sendTime&&sendTime>0?sendTime+'秒后':'获取验证码'}}</button>
             </div>
           </div>
-          <!-- <div class="zan-cell zan-field">
-              <div class="zan-cell__hd zan-field__title">身份证</div>
-              <input type="text" v-model="form.idcard" placeholder="请输入身份证号码" class="zan-field__input zan-cell__bd" />
-            </div> -->
         </div>
         <!-- 普通用户 -->
         <div v-if="form.role=='1'">
@@ -48,9 +48,9 @@
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">关注科室</div>
               <div class="zan-cell__bd">
-                <view v-if="form.department.length==0" class="department_tip">最多选择三个</view>
+                <view v-if="form.department.length==0" class="department_tip">最多选择三个,最少一个</view>
                 <view v-else class="department_show">
-                  <span @longpress="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
+                  <span @longpress="departmentDel(index)" @click="deleteHandle('department',index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
                     {{item.label}}
                   </span>
                 </view>
@@ -86,7 +86,7 @@
                 <div class="treatment_info">
                   <div class="treatment_tip zan-c-gray">提问前请上传病例信息，便于医生了解您的病情。上传资料以图片的方式提供，包括住院病例，入院记录、手术记录、出院记录、会诊记录、B超、心电图、CT、核磁共振、医嘱记录等 图片个数：{{form.treatment_info.treatment_images.length}} / 9 (长按删除)</div>
                   <div class="treatment_img_list">
-                    <div @longpress="form.treatment_info.treatment_images.splice(index,1)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.treatment_info.treatment_images" :key="index" class="treatment_img_item">
+                    <div @longpress="form.treatment_info.treatment_images.splice(index,1)" @click="deleteHandle('treatment_images',index)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.treatment_info.treatment_images" :key="index" class="treatment_img_item">
                       <image class="treatment_img_image" :src="item.imageURL+'-webp'"></image>
                     </div>
                     <div @click="imgsAdd('treatment_info')" class="treatment_img_item">
@@ -106,13 +106,13 @@
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">医院</div>
               <div class="zan-cell__bd department_show">
-                <div v-if="!form.hospital.label" class="department_tip">选择医院(长按删除)</div>
-                <div v-else @longpress="form.hospital={}" class="department_tag">
+                <div v-if="!form.hospital" class="department_tip">选择医院(长按删除)</div>
+                <div v-else @longpress="form.hospital=''" @click="deleteHandle('hospital')" class="department_tag">
                   {{form.hospital.label}}
                 </div>
               </div>
               <div class="zan-cell__ft">
-                <navigator v-if="!form.hospital.label" open-type="navigateTo" url="/pages/search/main?type=hospital" class="zan-btn zan-btn--mini zan-btn--primary">选择医院</navigator>
+                <navigator v-if="!form.hospital" open-type="navigateTo" url="/pages/search/main?type=hospital" class="zan-btn zan-btn--mini zan-btn--primary">选择医院</navigator>
               </div>
             </div>
             <div class="zan-cell zan-field">
@@ -120,7 +120,7 @@
               <div class="zan-cell__bd">
                 <view v-if="form.department.length==0" class="department_tip">选择科室(长按删除)</view>
                 <view v-else class="department_show">
-                  <span @longpress="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
+                  <span @longpress="departmentDel(index)" @click="deleteHandle('department',index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
                     {{item.label}}
                   </span>
                 </view>
@@ -133,8 +133,9 @@
             </div>
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">职称</div>
+              <input type="text" v-model="form.title" placeholder="请选择职称" disabled class="zan-field__input zan-cell__bd" />
               <picker v-if="picker.titleList.length" range-key="label" :range="picker.titleList" @change="titleChange" :value="picker.title">
-                <input type="text" v-model="picker.titleList[picker.title].label" disabled class="zan-field__input zan-cell__bd" />
+                <button class="zan-btn zan-btn--mini zan-btn--primary">选择职称</button>
               </picker>
             </div>
             <div class="zan-cell zan-field">
@@ -142,7 +143,7 @@
               <div class="treatment_info">
                 <div class="treatment_tip zan-c-gray">上传医师资格证书,执业资格证书 图片个数：{{form.certificate.length}} / 9 (长按删除)</div>
                 <div class="treatment_img_list">
-                  <div @longpress="form.certificate.splice(index,1)" @tap="imgsPrev(item.imageURL)" v-for="(item,index) in form.certificate" :key="index" class="treatment_img_item">
+                  <div @longpress="form.certificate.splice(index,1)" @click="deleteHandle('certificate',index)" v-for="(item,index) in form.certificate" :key="index" class="treatment_img_item">
                     <image class="treatment_img_image" :src="item.imageURL+'-webp'"></image>
                   </div>
                   <div @click="imgsAdd('certificate')" class="treatment_img_item">
@@ -167,7 +168,7 @@
               <div class="zan-cell__hd zan-field__title">潜在客户</div>
               <div class="zan-cell__bd department_show">
                 <div v-if="form.friend.length==0" class="department_tip">添加潜在客户(点击修改,长按删除)</div>
-                <div @longpress="form.friend.splice(index,1)" @click="friendAdd(index)" class="department_tag" v-for="(item,index) in form.friend" :key="index">
+                <div @longpress="form.friend.splice(index,1)" @click="friendHandle('friend',index)" class="department_tag" v-for="(item,index) in form.friend" :key="index">
                   {{item.name}}
                 </div>
               </div>
@@ -176,13 +177,25 @@
               </div>
             </div>
           </div>
+          <div class="zan-cell zan-field">
+            <div class="zan-cell__hd zan-field__title">服务医院</div>
+            <div class="zan-cell__bd department_show">
+              <div v-if="!form.hospital" class="department_tip">选择医院(长按删除)</div>
+              <div v-else @longpress="form.hospital=''" @click="deleteHandle('hospital')" class="department_tag">
+                {{form.hospital.label}}
+              </div>
+            </div>
+            <div class="zan-cell__ft">
+              <navigator v-if="!form.hospital" open-type="navigateTo" url="/pages/search/main?type=hospital" class="zan-btn zan-btn--mini zan-btn--primary">选择医院</navigator>
+            </div>
+          </div>
           <div class="zan-panel">
             <div class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">代理科室</div>
               <div class="zan-cell__bd">
                 <view v-if="form.department.length==0" class="department_tip">最多选择三个(长按删除)</view>
                 <view v-else class="department_show">
-                  <span @longpress="departmentDel(index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
+                  <span @longpress="departmentDel(index)" @click="deleteHandle('department',index)" class="department_tag" v-for="(item,index) in form.department" :key="index">
                     {{item.label}}
                   </span>
                 </view>
@@ -207,6 +220,7 @@
         </div>
       </div>
     </div>
+    <ZanDialog v-bind="zanDialog" />
   </div>
 </template>
 
@@ -271,6 +285,7 @@ export default {
         titleList: []
       },
       sendCodeing: false,
+      sendTime: 0,
       treamentShow: true,
       form_phone: "",
       form: {
@@ -280,7 +295,7 @@ export default {
         gender: "1",
         phone: "",
         code: "",
-        // idcard: "",
+        idcard: "",
         department: [], //所有人都可以关联科室 但是医生只能关联一个 其他关联三个
 
         //treatment_info里面包含的信息
@@ -292,7 +307,7 @@ export default {
         },
         //treatment_info-end
 
-        hospital: {}, //医院_id
+        hospital: "", //医院
         title: "", //职称string
         certificate: [], //医生证书
         description: "", //医生描述
@@ -305,7 +320,7 @@ export default {
   onShow() {
     let friend = this.$mp.page.data.friend;
     let friend_index = this.$mp.page.data.friend_index;
-    if (friend && this.form.role == 3) {
+    if (friend && this.form.role == "3") {
       if (friend_index) {
         this.form.friend[friend_index] = friend;
       } else {
@@ -313,7 +328,7 @@ export default {
       }
     }
     let hospital = this.$mp.page.data.hospital;
-    if (hospital && this.form.role == 2) {
+    if (hospital) {
       this.form.hospital = hospital;
     }
   },
@@ -357,8 +372,8 @@ export default {
     getTitleList() {
       titleList().then(res => {
         this.picker.titleList = res.data;
-        // 设置默认值
-        this.form.title = res.data[0]["label"];
+        // // 设置默认值
+        // this.form.title = res.data[0]["label"];
       });
     },
     titleChange(e) {
@@ -432,6 +447,45 @@ export default {
       this.picker.gender = e.target.value;
       this.form.gender = this.picker.genderList[e.target.value].key;
     },
+    deleteHandle(target, index = -1) {
+      let self = this;
+      wx.showModal({
+        title: "提示",
+        content: "删除?",
+        success: function(res) {
+          if (res.confirm) {
+            console.log(res, target, index);
+            if (
+              target == "department" ||
+              target == "friend" ||
+              target == "certificate"
+            ) {
+              if (self.form.agency.length) {
+                self.form.agency.splice(index, 1);
+              }
+              self.form[target].splice(index, 1);
+            } else if (target == "treatment_images") {
+              self.form.treatment_info[target].splice(index, 1);
+            } else if (target == "hospital") {
+              self.form[target] = "";
+            }
+          }
+        }
+      });
+    },
+    friendHandle(target, index) {
+      let self = this;
+      wx.showActionSheet({
+        itemList: ["修改", "删除"],
+        success: function(res) {
+          if (res.tapIndex == 0) {
+            self.friendAdd(index);
+          } else {
+            self.form[target].splice(index, 1);
+          }
+        }
+      });
+    },
     departmentDel(i) {
       //科室删除时要同时删除代理
       this.form.department.splice(i, 1);
@@ -444,6 +498,15 @@ export default {
       let cIndex = e.target.value[1];
       let oSelectArr = this.form.department;
       if (oSelectArr.length < num) {
+        for (let item of oSelectArr) {
+          if (item && item.label == this.viceDepartList[cIndex].label) {
+            wx.showToast({
+              title: `不可以重复选择`,
+              icon: "none"
+            });
+            return false;
+          }
+        }
         let obj = {
           label: this.viceDepartList[cIndex].label,
           key: this.viceDepartList[cIndex].key
@@ -463,20 +526,25 @@ export default {
       // 是否手术选择成功
       this.form.treatment_info.operation = e.target.value;
     },
-    setsendCodeBtn() {
-      setTimeout(() => {
-        this.sendCodeing = false;
-      }, this.$store.getters.codeTime * 1000);
-      this.sendCodeing = true;
-    },
     InputChange(param, e) {
       this.form[param] = e.target.value;
     },
+    setsendCodeBtn() {
+      this.sendTime = Number(this.$store.getters.codeTime);
+      this.sendCodeing = true;
+      this.timer = setInterval(() => {
+        if (this.sendTime < 1) {
+          clearInterval(this.timer);
+          this.sendCodeing = false;
+        }
+        this.sendTime--;
+      }, 1e3);
+    },
     sendCode(e) {
       if (authType.phone.reg.test(this.form.phone)) {
-        this.setsendCodeBtn();
         sendCode({ phone: this.form.phone, type: "bind" }).then(res => {
           if (res.success) {
+            this.setsendCodeBtn();
             wx.showToast({
               title: "验证码发送成功",
               icon: "none"
@@ -564,14 +632,29 @@ export default {
         code: {
           required: true,
           code: true
+        },
+        idcard: {
+          required: true,
+          idcard: true
+        },
+        department: {
+          required: true
         }
       };
       if (this.form.role == "2") {
-        rules.description = {
-          required: true,
-          minlength: 10,
-          maxlength: 140
-        };
+        Object.assign(rules, {
+          title: {
+            required: true
+          },
+          hospital: {
+            isobject: true
+          },
+          description: {
+            required: true,
+            minlength: 10,
+            maxlength: 140
+          }
+        });
       }
       // 验证字段的提示信息，若不传则调用默认的信息
       const messages = {
@@ -586,6 +669,19 @@ export default {
         code: {
           required: "请输入验证码",
           code: "请输入正确的验证码"
+        },
+        idcard: {
+          required: "请输入身份证",
+          idcard: "身份证格式不正确"
+        },
+        department: {
+          required: "至少选择一个科室"
+        },
+        title: {
+          required: "请选择职称"
+        },
+        hospital: {
+          isobject: "请选择医院"
         },
         description: {
           required: "请填写自我介绍",
@@ -689,8 +785,8 @@ export default {
   margin: 4px 0;
   border: 1px solid #949494;
   border-radius: 4px;
-  line-height: 20px;
-  font-size: 12px;
+  line-height: 24px;
+  font-size: 14px;
 }
 .department_tip {
   color: #949494;

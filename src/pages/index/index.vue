@@ -144,7 +144,7 @@ export default {
     }
   },
   mounted() {
-    if (!this.role || this.role == "0") {
+    if (!this.role) {
       this.getUserInfo();
     }
   },

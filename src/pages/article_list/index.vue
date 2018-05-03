@@ -21,9 +21,6 @@ export default {
   },
   computed: {
     ...mapGetters(["id", "department"])
-  },
-  onShow() {
-    console.log(this.id);
   }
 };
 </script>

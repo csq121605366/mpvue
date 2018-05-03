@@ -32,7 +32,6 @@ export default {
           data[index].names = element.name.split(" ");
         });
         this.list = data;
-        console.log(this.list);
       });
     }
   },

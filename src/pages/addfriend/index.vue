@@ -25,8 +25,8 @@
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">医院</div>
           <div class="zan-cell__bd department_show">
-            <div v-if="!form.hospital.label" class="department_tip">选择医院(长按删除)</div>
-            <div v-else @longpress="form.hospital={}" class="department_tag">
+            <div v-if="!form.hospital" class="department_tip">选择医院(长按删除)</div>
+            <div v-else @longpress="form.hospital=''" @click="deleteHandle('hospital',index)" class="department_tag">
               {{form.hospital.label}}
             </div>
           </div>
@@ -37,10 +37,10 @@
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">科室</div>
           <div class="zan-cell__bd department_show">
-            <input type="text" disabled :value="form.department.label">
+            <input type="text" disabled :value="form.department.label" placeholder="请选择科室">
           </div>
           <div class="zan-cell__ft">
-            <picker v-if="form.department" mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
+            <picker mode="multiSelector" @columnchange="departmentColumChange" class="department_picker" :range="picker.departmentList" @change="departmentChange" :value="picker.department">
               <button class="zan-btn zan-btn--mini zan-btn--primary">选择科室</button>
             </picker>
           </div>
@@ -48,7 +48,7 @@
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">职称</div>
           <div class="zan-cell__bd">
-            <input type="text" :value="form.title||'请选择职称'" disabled class="zan-field__input zan-cell__bd" />
+            <input type="text" :value="form.title" placeholder="请选择职称" disabled class="zan-field__input zan-cell__bd" />
           </div>
           <div class="zan-cell__ft">
             <picker v-if="picker.titleList.length" range-key="label" :range="picker.titleList" @change="titleChange">
@@ -111,7 +111,7 @@ export default {
         gender: "1",
         title: "",
         phone: "",
-        hospital: {},
+        hospital: "",
         department: {},
         description: ""
       },
@@ -120,7 +120,7 @@ export default {
         gender: "1",
         title: "",
         phone: "",
-        hospital: {},
+        hospital: "",
         department: {},
         description: ""
       }
@@ -157,7 +157,7 @@ export default {
     titleChange(e) {
       let index = e.target.value;
       this.form.title = this.picker.titleList[index].label;
-      console.log( this.picker.titleList[index], this.form.title )
+      console.log(this.picker.titleList[index], this.form.title);
     },
     genderChange(e) {
       //性别选择成功
@@ -167,18 +167,27 @@ export default {
     departmentChange(e) {
       //科室选择成功
       let cIndex = e.target.value[1];
-      if (this.form.department) {
-        let obj = {
-          label: this.viceDepartList[cIndex].label,
-          key: this.viceDepartList[cIndex].key
-        };
-        this.form.department = obj;
-      } else {
-        wx.showToast({
-          title: "最多选择一个科室",
-          icon: "none"
-        });
-      }
+      let obj = {
+        label: this.viceDepartList[cIndex].label,
+        key: this.viceDepartList[cIndex].key
+      };
+      this.form.department = obj;
+    },
+    deleteHandle(target, index = -1) {
+      let self = this;
+      wx.showModal({
+        title: "提示",
+        content: "删除?",
+        success: function(res) {
+          if (res.confirm) {
+            if (target == "department") {
+              self.form[target].splice(index, 1);
+            } else if (target == "hospital") {
+              self.form[target] = "";
+            }
+          }
+        }
+      });
     },
     getmainDepart() {
       //获取主列表并设置默认值

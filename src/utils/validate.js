@@ -224,10 +224,10 @@ class WxValidate {
         return that.optional(value) || Array.isArray(value);
       },
       /**
-       * 验证数组
+       * 验证对象
        */
       isobject(value) {
-        return JSON.stringify(value) != "{}";
+        return value && JSON.stringify(value) != "{}";
       }
     };
   }

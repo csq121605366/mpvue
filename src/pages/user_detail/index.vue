@@ -12,6 +12,10 @@
             <div class="zan-cell__ft">{{user_info.name}}</div>
           </div>
           <div class="zan-cell">
+            <div class="zan-cell__bd">手机号</div>
+            <div class="zan-cell__ft">{{user_info.phone}}</div>
+          </div>
+          <div class="zan-cell">
             <div class="zan-cell__bd">角色</div>
             <div class="zan-cell__ft">{{rolelist[user_info.role]}}</div>
           </div>
@@ -21,8 +25,9 @@
             <div v-else class="zan-cell__bd">关注科室-{{index+1}}</div>
             <div class="zan-cell__ft">{{item.label}}</div>
           </div>
-          <div v-if="user_info.role=='2'" class="zan-cell">
-            <div class="zan-cell__bd">就职医院</div>
+          <div v-if="user_info.hospital" class="zan-cell">
+            <div v-if="user_info.role=='2'" class="zan-cell__bd">就职医院</div>
+            <div v-else>服务医院</div>
             <div class="zan-cell__ft">{{user_info.hospital.label}}</div>
           </div>
           <div v-if="user_info.role=='2'" class="zan-cell">

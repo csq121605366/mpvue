@@ -124,7 +124,6 @@
       _handleZanDialogButtonClick (e) {
         const {currentTarget = {}} = e
         const {dataset = {}} = currentTarget
-        console.log(this)
 
         // 获取当次弹出框的信息
         const zanDialogData = this || {}
@@ -157,5 +156,10 @@
 </script>
 
 <style scoped>
-
+.zan-dialog--mask{
+  z-index: 998;
+}
+.zan-dialog--container{
+  z-index: 999;
+}
 </style>
