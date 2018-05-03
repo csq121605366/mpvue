@@ -69,7 +69,7 @@
   vertical-align: middle;
 }
 .tablist_article_banner {
-  flex: 0 1 auto;
+  flex: 0 0 60px;
 }
 .tablist_article_img {
   width: 60px;
@@ -125,7 +125,7 @@
             <div v-if="x.user_id" class="tablist_article_author">
               <img class="tablist_article_avatar" :src="x.user_id.avatar?x.user_id.avatar.imageURL:x.user_id.avatarUrl" />
               <span>{{x.user_id.name}}</span>
-              <view class="tablist_article_tag">{{articleStatusList[x.status]}}</view>
+              <!-- <view class="tablist_article_tag">{{articleStatusList[x.status]}}</view> -->
               <view class="tablist_article_tag">{{x.illness_name}}</view>
               <view class="tablist_article_tag">{{x.illness_time}}</view>
             </div>
@@ -256,6 +256,7 @@ export default {
         sort
       })
         .then(res => {
+          console.log(res)
           if (res.data.length) {
             this.sublist.list[sort - 1].data = res.data;
             this.sublist.list[sort - 1].last_id = res.data[0]._id;

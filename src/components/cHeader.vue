@@ -2,7 +2,7 @@
   <header class="c-header" :class="{ 'is-fixed': fixed }">
     <div class="c-header-button is-left">
       <!-- <slot name="left"></slot> -->
-      <navigator v-if="back" open-type="navigateBack">返回</navigator>
+      <navigator v-if="back" class="c-header-navtigator" open-type="navigateBack">返回</navigator>
     </div>
     <h1 class="c-header-title" v-text="title"></h1>
     <div class="c-header-button is-right"></div>
@@ -46,7 +46,6 @@ export default {
   box-shadow: none;
   color: inherit;
   display: inline-block;
-  padding: 0;
   font-size: inherit;
 }
 .c-header .c-button::after {
@@ -61,8 +60,10 @@ export default {
 }
 .c-header-button {
   font-size: 16px;
-  width: 40px;
-  padding: 10px 10px 10px 0;
+  width: 60px;
+}
+.c-header-navtigator{
+  padding: 10px;
 }
 .c-header-button > a {
   color: inherit;

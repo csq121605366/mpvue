@@ -46,10 +46,10 @@
         <div class="zan-cell zan-field">
           <div class="zan-cell__hd zan-field__title">附件(视频)</div>
           <div class="image_info">
-            <div class="image_tip zan-c-gray">上传图片(长按删除)</div>
+            <div class="image_tip zan-c-gray">上传视频(长按删除)</div>
             <div class="image_img_list">
-              <div @longpress="form.videos.splice(index, 1)" v-for="(item,index) in form.videos" :key="index" class="image_img_item">
-                <image class="image_img_image" :src="item.thumbImg.imageURL"></image>
+              <div @longpress="form.videos.splice(index, 1)" v-for="(item,index) in form.videos" :key="index" class="image_img_item-video">
+                <video class="image_img_video" :src="item.videoURL"></video>
               </div>
               <div @click="videoAdd" v-if="videMaxItem>form.videos.length" class="image_img_item">
                 <span class="iconfont icon-tainjia"></span>
@@ -84,11 +84,8 @@ export default {
   },
   data() {
     return {
-      qiniuTicket: "",
-      qiniuDomain: "",
-      qiniuRegion: "",
       maxDuration: 60,
-      videMaxItem: 3,
+      videMaxItem: 4,
       imageMaxItem: 9,
       picker: {
         sort: 0,
@@ -112,6 +109,17 @@ export default {
           "术后一年"
         ]
       },
+      oForm: {
+        article_id: "",
+        sort: "1", //文章分类 1日志记录 2手术记录 3科普文章
+        title: "", //标题
+        illness_name: "", //疾病名称
+        illness_time: "术后一周", //手术时间进程
+        type: "1", //文章展示模式 1公开 2相同科室查看 3私有
+        images: [], // 文章相关图片
+        videos: [], // 视频资源
+        pre_content: "" //文章预览内容
+      },
       form: {
         article_id: "",
         sort: "1", //文章分类 1日志记录 2手术记录 3科普文章
@@ -124,10 +132,6 @@ export default {
         pre_content: "" //文章预览内容
       }
     };
-  },
-  mounted() {
-    // 获取七牛ticket
-    this.qiniu_init();
   },
   onLoad(options) {
     if (options && options.article_id) {
@@ -146,15 +150,7 @@ export default {
       getDetail({ article_id }).then(res => {
         if (res.success) {
           Object.assign(this.form, res.data);
-          console.log(this.form);
         }
-      });
-    },
-    qiniu_init() {
-      qiniuTicket().then(res => {
-        this.qiniuRegion = res.data.qiniuRegion;
-        this.qiniuTicket = res.data.qiniuTicket;
-        this.qiniuDomain = res.data.qiniuDomain;
       });
     },
     sortChange(e) {
@@ -195,6 +191,25 @@ export default {
         res => {}
       );
     },
+    creatImg(videoPath) {
+      return new Promise((resolve, reject) => {
+        console.log("videoPath", videoPath);
+        var ctx = wx.createCanvasContext("videoThumb");
+        ctx.drawImage(videoPath, 0, 0, 200, 200);
+        ctx.draw();
+        console.log("ctx", ctx);
+        let imgSrc;
+        wx.canvasToTempFilePath({
+          canvasId: "videoThumb",
+          width: 200,
+          height: 200,
+          success(res) {
+            console.log("imgSrc", res);
+            resolve(res.tempFilePath);
+          }
+        });
+      });
+    },
     videoAdd(e) {
       let self = this;
       if (this.form.videos.length < this.videMaxItem) {
@@ -203,21 +218,27 @@ export default {
             sourceType: ["album", "camera"],
             maxDuration: this.maxDuration
           })
-          .then(async data => {
+          .then(data => {
             wx.showLoading({
               title: "上传中...",
               mask: true
             });
             var tempFilePath = data.tempFilePath;
-            var thumbTempFilePath = data.thumbTempFilePath;
             if (data.duration < self.maxDuration) {
-              self.upload(tempFilePath, video => {
-                self.upload(thumbTempFilePath, img => {
-                  video.thumbImg = img;
-                  self.form.videos.push(video);
-                  wx.hideLoading();
+              if (/(.mp4)$/.test(tempFilePath)) {
+                //创建视频缩略图
+                this.$store
+                  .dispatch("qiniuUpload", tempFilePath)
+                  .then(video => {
+                    wx.hideLoading();
+                    this.form.videos.push(video);
+                  });
+              } else {
+                wx.showToast({
+                  title: `不支持的视频格式`,
+                  icon: "none"
                 });
-              });
+              }
             } else {
               wx.showToast({
                 title: `请上传小于${this.maxDuration}s的视频`,
@@ -244,10 +265,16 @@ export default {
           .then(async data => {
             var tempFilePaths = data.tempFilePaths;
             tempFilePaths.forEach(src => {
-              self.upload(src, res => {
-                // 返回bucket文件夹名 fsize文件大小 hash值 imageURL图片地址 key文件名
-                self.form.images.push(res);
-              });
+              if (/(gif|jpg|jpeg|bmp|png)$/.test(src)) {
+                this.$store.dispatch("qiniuUpload", src).then(res => {
+                  self.form.images.push(res);
+                });
+              } else {
+                wx.showToast({
+                  title: `只可以选择图片上传`,
+                  icon: "none"
+                });
+              }
             });
           });
       } else {
@@ -329,6 +356,7 @@ export default {
               mask: true,
               icon: "none",
               success() {
+                this.form = this.oForm;
                 wx.navigateBack();
               }
             });
@@ -377,6 +405,11 @@ export default {
   width: 70px;
   border-radius: 6px;
 }
+.image_img_item-video {
+  width: 120px;
+  height: 90px;
+  margin: 5px 10px 10px 0;
+}
 .image_img_item .iconfont {
   font-size: 30px;
   font-weight: 600;
@@ -387,7 +420,12 @@ export default {
   width: 100%;
   border-radius: 6px;
 }
-
+.image_img_video {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border-radius: 6px;
+}
 .content-prev {
   flex: 1;
   word-break: break-all;

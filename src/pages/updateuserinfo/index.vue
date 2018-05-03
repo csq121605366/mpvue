@@ -271,9 +271,6 @@ export default {
         titleList: []
       },
       sendCodeing: false,
-      qiniuTicket: "",
-      qiniuDomain: "",
-      qiniuRegion: "",
       treamentShow: true,
       form_phone: "",
       form: {
@@ -308,12 +305,9 @@ export default {
   onShow() {
     let friend = this.$mp.page.data.friend;
     let friend_index = this.$mp.page.data.friend_index;
-    console.log(" this.picker.titleList[index]", this.$mp.page.data);
     if (friend && this.form.role == 3) {
-      console.log(friend);
       if (friend_index) {
         this.form.friend[friend_index] = friend;
-        console.log("this.form.friend", this.form.friend);
       } else {
         this.form.friend.push(friend);
       }
@@ -346,17 +340,10 @@ export default {
     } else if (option.role) {
       this.form.role = option.role;
     }
-
     if (this.form.role == 2) {
       this.getTitleList();
     }
     this.getmainDepart();
-    // 获取七牛ticket
-    qiniuTicket().then(res => {
-      this.qiniuRegion = res.data.qiniuRegion;
-      this.qiniuTicket = res.data.qiniuTicket;
-      this.qiniuDomain = res.data.qiniuDomain;
-    });
     let self = this;
     //获取用户坐标
     wx.getLocation({
@@ -428,10 +415,16 @@ export default {
         })
         .then(res => {
           var tempFilePaths = res.tempFilePaths[0];
-          self.uploadImg(tempFilePaths, res => {
-            // 返回bucket文件夹名 fsize文件大小 hash值 imageURL图片地址 key文件名
-            self.form.avatar = res;
-          });
+          if (/(gif|jpg|jpeg|bmp|png)$/.test(tempFilePaths)) {
+            this.$store.dispatch("qiniuUpload", tempFilePaths).then(res => {
+              self.form.avatar = res;
+            });
+          } else {
+            wx.showToast({
+              title: `只可以选择图片上传`,
+              icon: "none"
+            });
+          }
         });
     },
     genderChange(e) {
@@ -473,12 +466,11 @@ export default {
     setsendCodeBtn() {
       setTimeout(() => {
         this.sendCodeing = false;
-      }, 6 * 1000);
+      }, this.$store.getters.codeTime * 1000);
       this.sendCodeing = true;
     },
     InputChange(param, e) {
       this.form[param] = e.target.value;
-      console.log(e.target.value);
     },
     sendCode(e) {
       if (authType.phone.reg.test(this.form.phone)) {
@@ -504,32 +496,6 @@ export default {
         });
       }
     },
-    async uploadImg(filePath, cb) {
-      let self = this;
-      // filePath, success, fail, options, progress
-      await qiniu.upload(
-        filePath,
-        res => {
-          if (cb) cb(res);
-          wx.showToast({
-            title: "上传成功",
-            icon: "success"
-          });
-        },
-        error => {
-          wx.showToast({
-            title: "上传失败",
-            icon: "none"
-          });
-        },
-        {
-          region: self.qiniuRegion,
-          domain: self.qiniuDomain, // // bucket 域名，下载资源时用到。如果设置，会在 success callback 的 res 参数加上可以直接使用的 ImageURL 字段。否则需要自己拼接
-          uptoken: self.qiniuTicket // 由其他程序生成七牛 uptoken
-        },
-        res => {}
-      );
-    },
     imgsAdd(type = "treatment_info") {
       let self = this;
       this.type = this.type || 0;
@@ -544,14 +510,20 @@ export default {
             var tempFilePaths = res.tempFilePaths;
             self.type += tempFilePaths.length;
             tempFilePaths.forEach(src => {
-              self.uploadImg(src, res => {
-                // 返回bucket文件夹名 fsize文件大小 hash值 imageURL图片地址 key文件名
-                if (type == "treatment_info") {
-                  self.form.treatment_info.treatment_images.push(res);
-                } else if (type == "certificate") {
-                  self.form.certificate.push(res);
-                }
-              });
+              if (/(gif|jpg|jpeg|bmp|png)$/.test(src)) {
+                this.$store.dispatch("qiniuUpload", src).then(res => {
+                  if (type == "treatment_info") {
+                    self.form.treatment_info.treatment_images.push(res);
+                  } else if (type == "certificate") {
+                    self.form.certificate.push(res);
+                  }
+                });
+              } else {
+                wx.showToast({
+                  title: `只可以选择图片上传`,
+                  icon: "none"
+                });
+              }
             });
           });
       } else {

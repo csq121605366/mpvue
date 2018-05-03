@@ -2,6 +2,7 @@ const getters = {
   rootUrl: state => state.app.rootUrl,
   apiUrl: state => state.app.apiUrl,
   qiniuTicket: state => state.app.qiniuTicket,
+  codeTime: state => state.app.codeTime,
   authType: state => state.app.authType,
   sortList: state => state.app.sortList,
   operationList: state => state.app.operationList,

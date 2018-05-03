@@ -19,11 +19,11 @@ export default {
     cHeader,
     cTap
   },
-  data() {
-    return {};
-  },
   computed: {
     ...mapGetters(["id", "department"])
+  },
+  onShow() {
+    console.log(this.id);
   }
 };
 </script>
