@@ -27,7 +27,7 @@
           </div>
           <div v-if="user_info.hospital" class="zan-cell">
             <div v-if="user_info.role=='2'" class="zan-cell__bd">就职医院</div>
-            <div v-else>服务医院</div>
+            <div v-else class="zan-cell__bd">服务医院</div>
             <div class="zan-cell__ft">{{user_info.hospital.label}}</div>
           </div>
           <div v-if="user_info.role=='2'" class="zan-cell">

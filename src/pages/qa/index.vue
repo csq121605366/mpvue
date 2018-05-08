@@ -110,15 +110,16 @@ export default {
       });
     }
   },
-  onLoad() {
-    this.getData();
-  },
   onPullDownRefresh() {
     this.last_id = "";
     this.getData();
     setTimeout(() => {
       wx.stopPullDownRefresh();
     }, 800);
+  },
+  onLoad() {
+    this.last_id = "";
+    this.getData();
   },
   onShow() {
     //病人进来为提问页面 医生进来为问题列表
@@ -142,7 +143,7 @@ export default {
         mask: true,
         success: function() {
           setTimeout(() => {
-            wx.switchTab({ url: "/pages/index/main" });
+            wx.switchTab({ url: "/pages/my/main" });
           }, 800);
         }
       });

@@ -209,7 +209,7 @@
             <div v-if="form.department.length" v-for="(item,index) in form.department" :key="index" class="zan-cell zan-field">
               <div class="zan-cell__hd zan-field__title">{{item.label}}</div>
               <div class="zan-cell__bd">
-                <input type="text" @input="form.agency[index].name = $event.target.value" :placeholder="form.agency[index]?form.agency[index].name:'请输入姓名'" class="zan-field__input zan-cell__bd" />
+                <input type="text" @input="form.agency[index].name = $event.target.value" :placeholder="form.agency[index].name||'请输入姓名以空格隔开'" class="zan-field__input zan-cell__bd" />
               </div>
             </div>
           </div>
@@ -286,7 +286,7 @@ export default {
       },
       sendCodeing: false,
       sendTime: 0,
-      treamentShow: true,
+      treamentShow: false,
       form_phone: "",
       form: {
         role: "",

@@ -46,7 +46,9 @@
         </div>
         <!-- 已经回复内容 -->
         <div v-if="qa.answer&&qa.answer.length" v-for="(item,index) in qa.answer" :key="index">
-          <view class="zan-panel-title treatment_title">{{item.title||'经理人'}}-{{item.name}}{{'-'+item.created?item.created:''}}：</view>
+          <view v-if="item.role=='1'" class="zan-panel-title treatment_title">{{'用户'}}-{{item.name}}{{'-'+item.created?item.created:''}}：</view>
+          <view v-else-if="item.role=='2'" class="zan-panel-title treatment_title">{{'经理人'}}-{{item.name}}{{'-'+item.created?item.created:''}}：</view>
+          <view v-else class="zan-panel-title treatment_title">{{item.title}}-{{item.name}}{{'-'+item.created?item.created:''}}：</view>
           <div class="zan-cell zan-field">
             <div class="zan-cell__bd">
               <div class="qa_content">{{item.content}}</div>
@@ -60,14 +62,14 @@
         </div>
 
         <!-- 回复内容 -->
-        <div v-if="role=='2'||role=='3'" class="zan-panel">
-          <view @click="answerShow=!answerShow" class="zan-panel-title treatment_title">回复信息
+        <div v-if="((role=='2'||role=='3')&&status=='2')||(role=='1'&&qa.user_id==id)" class="zan-panel">
+          <view @click="answerShow=!answerShow" class="zan-panel-title treatment_title">已回复
             <i class="zan-arrow treatment_showbtn" :class="answerShow?'treatment_showbtn-active':''"></i>
           </view>
           <div v-if="answerShow">
             <div class="zan-cell zan-field">
               <div class="zan-cell__bd">
-                <textarea class="content" v-model="form.content" placeholder="回复用户的问题" maxlength="500"></textarea>
+                <textarea class="content" v-model="form.content" :placeholder="role=='1'?'增加描述信息':'回复用户的问题'" maxlength="500"></textarea>
               </div>
             </div>
             <div class="zan-cell zan-field">
@@ -130,7 +132,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["operationList", "role"])
+    ...mapGetters(["operationList", "role", "status", "id"])
   },
   methods: {
     _initData() {
