@@ -87,8 +87,6 @@
 
 <script>
 import cHeader from "@/components/cHeader";
-import cSearch from "@/components/cSearch";
-import cArticle from "@/components/cArticle";
 import cTap from "@/components/cTap";
 import { mapGetters } from "vuex";
 export default {
@@ -102,8 +100,6 @@ export default {
   },
   components: {
     cHeader,
-    cSearch,
-    cArticle,
     cTap
   },
   onPullDownRefresh() {
