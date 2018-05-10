@@ -256,7 +256,6 @@ export default {
         sort
       })
         .then(res => {
-          console.log(res)
           if (res.data.length) {
             this.sublist.list[sort - 1].data = res.data;
             this.sublist.list[sort - 1].last_id = res.data[0]._id;

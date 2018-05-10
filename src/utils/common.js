@@ -49,14 +49,11 @@ const asyncWrap = fn => (options = {}) =>
         }
       },
       fail: err => {
-        console.log("err", err);
-
-        // wx.showToast({
-        //   title: '无网络',
-        //   icon: 'none',
-        //   duration: 2000
-        // })
-        // reject(err);
+        wx.showToast({
+          title: '无网络',
+          icon: 'none',
+          duration: 2000
+        })
       }
     };
     options.url = conf.baseUrl + options.url;
