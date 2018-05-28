@@ -27,7 +27,7 @@ const asyncWrap = fn => (options = {}) =>
                 title: "您的审核未通过，请修改后重新提交",
                 icon: "none",
                 mask: true,
-                success: function() {
+                success: function () {
                   setTimeout(() => {
                     wx.switchTab({
                       url: "/pages/my/main"
@@ -54,7 +54,6 @@ const asyncWrap = fn => (options = {}) =>
           icon: 'none',
           duration: 2000
         })
-        reject(err);
       }
     };
     options.url = conf.baseUrl + options.url;
